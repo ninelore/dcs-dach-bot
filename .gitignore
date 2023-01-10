@@ -142,3 +142,5 @@ Cargo.lock
 ####### END TEMPLATE
 
 config.json
+
+serenity/*
