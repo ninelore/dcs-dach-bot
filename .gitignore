@@ -143,4 +143,4 @@ Cargo.lock
 
 config.json
 
-serenity/*
+serenity/
