@@ -1,0 +1,51 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'dcs-dach-bot'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=dcs-dach-bot",
+          "--package=dcs-dach-bot"
+        ],
+        "filter": {
+          "name": "dcs-dach-bot",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "attach",
+      "name": "Attach debugger",
+      "program": "${cwd}/target/debug/dcs-dach-bot"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'dcs-dach-bot'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=dcs-dach-bot",
+          "--package=dcs-dach-bot"
+        ],
+        "filter": {
+          "name": "dcs-dach-bot",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
