@@ -2,12 +2,37 @@
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  
+  "inputs": [
+    {
+      "id": "DISCORD_TOKEN",
+      "type": "command",
+      "command": "shellCommand.execute",
+      "args": {
+        "command": "cat ~/token.txt",
+        "useFirstResult": "true",
+      }
+    },
+    {
+      "id": "GUILD_ID",
+      "type": "command",
+      "command": "shellCommand.execute",
+      "args": {
+        "command": "cat ~/guild.txt",
+        "useFirstResult": "true",
+      }
+    }
+  ],
   "version": "0.2.0",
   "configurations": [
     {
       "type": "lldb",
       "request": "launch",
       "name": "Debug executable 'dcs-dach-bot'",
+      "env": {
+        "DISCORD_TOKEN": "${input:DISCORD_TOKEN}",
+        "GUILD_ID": "${input:GUILD_ID}"
+      },
       "cargo": {
         "args": [
           "build",
