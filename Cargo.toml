@@ -6,5 +6,5 @@ edition = "2021"
 # https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serenity = { version = "0.11", default-features = false, features = ["client", "gateway", "rustls_backend", "model"] }
+serenity = { version = "0.11", default-features = false, features = ["builder", "client", "cache", "gateway", "rustls_backend", "model", "utils"] }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }

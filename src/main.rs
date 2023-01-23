@@ -1,4 +1,5 @@
 mod commands;
+mod functions;
 
 use std::env;
 
@@ -7,6 +8,8 @@ use serenity::async_trait;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
+use serenity::model::prelude::Member;
+use serenity::model::user::User;
 use serenity::prelude::*;
 
 struct Handler;
@@ -34,6 +37,14 @@ impl EventHandler for Handler {
             }
         }
     }
+
+    async fn guild_member_addition(&self, ctx: Context, member: Member) {
+        functions::update_users::run(&ctx, member.guild_id).await;
+    }
+    async fn guild_member_removal(&self, ctx: Context, guild_id: GuildId, _user: User, _member_data_if_available: Option<Member>) {
+        functions::update_users::run(&ctx, guild_id).await;
+    }
+
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
 
@@ -44,6 +55,7 @@ impl EventHandler for Handler {
                 .expect("GUILD_ID must be an integer"),
         );
 
+        // GUILD COMMANDS
         let commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::ping::register(command))
@@ -53,6 +65,7 @@ impl EventHandler for Handler {
 
         println!("I now have the following guild slash commands: {:#?}", commands);
 
+        // GLOBAL COMMANDS
         /*let guild_command = Command::create_global_application_command(&ctx.http, |command| {
             commands::wonderful_command::register(command)
         })
@@ -65,7 +78,8 @@ impl EventHandler for Handler {
 #[tokio::main]
 async fn main() {
     let token = env::var("DISCORD_TOKEN").expect("token");
-    let intents = GatewayIntents::non_privileged();
+    let intents = GatewayIntents::non_privileged()
+        | GatewayIntents::GUILD_MEMBERS;
 
     let mut client = Client::builder(token, intents)
         .event_handler(Handler)
