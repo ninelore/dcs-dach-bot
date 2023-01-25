@@ -10,6 +10,7 @@ use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
 use serenity::model::prelude::Member;
 use serenity::model::user::User;
+use serenity::model::voice::VoiceState;
 use serenity::prelude::*;
 
 struct Handler;
@@ -39,10 +40,14 @@ impl EventHandler for Handler {
     }
 
     async fn guild_member_addition(&self, ctx: Context, member: Member) {
-        functions::update_users::run(&ctx, member.guild_id).await;
+        functions::update_users::members(&ctx, member.guild_id).await;
     }
     async fn guild_member_removal(&self, ctx: Context, guild_id: GuildId, _user: User, _member_data_if_available: Option<Member>) {
-        functions::update_users::run(&ctx, guild_id).await;
+        functions::update_users::members(&ctx, guild_id).await;
+    }
+
+    async fn voice_state_update(&self, ctx: Context, _old: Option<VoiceState>, _new: VoiceState) {
+        functions::update_users::members_voice(&ctx, _old, _new).await;
     }
 
     async fn ready(&self, ctx: Context, ready: Ready) {
