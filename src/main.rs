@@ -110,10 +110,11 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
-    let _cid = env::var("CHANNELID_VOICE").expect("channelid_voice").parse::<u64>().expect("channelid_voice: u64");
+    let _cid = env::var("CHANNELID_ALL").expect("channelid_all").parse::<u64>().expect("channelid_all: u64");
     let token = env::var("DISCORD_TOKEN").expect("token");
     let intents = GatewayIntents::non_privileged()
-        | GatewayIntents::GUILD_MEMBERS;
+        | GatewayIntents::GUILD_MEMBERS
+        | GatewayIntents::GUILD_PRESENCES;
 
     let mut client = Client::builder(token, intents)
         .event_handler(Handler {

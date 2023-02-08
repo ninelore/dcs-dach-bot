@@ -1,8 +1,13 @@
 FROM rust:latest AS builder
 
 WORKDIR /usr/src/dcs-dach-bot
-COPY . .
+ADD . ./
 
-RUN cargo install --path .
+RUN cargo build --release
 
-CMD ["cargo", "run", "--release"]
+FROM debian:stable-slim
+WORKDIR /root
+
+COPY --from=builder /usr/src/dcs-dach-bot/target/release/dcs-dach-bot /opt/dcs-dach-bot
+
+CMD ["/opt/dcs-dach-bot"]
