@@ -110,7 +110,11 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
+    
+    // Check if ENV is set
     let _cid = env::var("CHANNELID_ALL").expect("channelid_all").parse::<u64>().expect("channelid_all: u64");
+    drop(_cid);
+
     let token = env::var("DISCORD_TOKEN").expect("token");
     let intents = GatewayIntents::non_privileged()
         | GatewayIntents::GUILD_MEMBERS
