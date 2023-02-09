@@ -88,19 +88,9 @@ impl EventHandler for Handler {
           functions::update_users::members(&ctx1, guild_id).await;
           tokio::time::sleep(Duration::from_secs(3)).await;
           functions::update_users::members_online(&ctx1, guild_id).await;
-          println!("Member count updated. Next update in 601 Seconds");
           tokio::time::sleep(Duration::from_secs(601)).await;
         }
       });
-
-      // Vorlage für 2nd Timer
-      /* let ctx2 = Arc::clone(&ctx);
-      tokio::spawn(async move {
-        loop {
-          //code
-          tokio::time::sleep(Duration::from_secs(60)).await;
-        }
-      }); */
 
       self.is_loop_running.swap(true, Ordering::Relaxed);
     }
@@ -111,8 +101,8 @@ impl EventHandler for Handler {
 async fn main() {
 
   // Use env file if available (for local testing only!)
-  if dotenv::from_filename("dcs-dach-bot_*.env").is_ok() {
-    dotenv::from_filename("dcs-dach-bot_*.env").ok();
+  if dotenv::from_filename("dcs-dach-bot.env").ok().is_some() {
+    dotenv::from_filename("dcs-dach-bot.env").ok();
     println!(".env found and applied");
   }
 

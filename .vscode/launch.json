@@ -2,67 +2,13 @@
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  
-  "inputs": [
-    {
-      "id": "DISCORD_TOKEN",
-      "type": "command",
-      "command": "shellCommand.execute",
-      "args": {
-        "command": "cat ~/token.txt",
-        "useFirstResult": "true",
-      }
-    },
-    {
-      "id": "GUILD_ID",
-      "type": "command",
-      "command": "shellCommand.execute",
-      "args": {
-        "command": "cat ~/guild.txt",
-        "useFirstResult": "true",
-      }
-    },
-    {
-      "id": "CHANNELID_ALL",
-      "type": "command",
-      "command": "shellCommand.execute",
-      "args": {
-        "command": "cat ~/channel_all.txt",
-        "useFirstResult": "true",
-      }
-    },
-    {
-      "id": "CHANNELID_ONLINE",
-      "type": "command",
-      "command": "shellCommand.execute",
-      "args": {
-        "command": "cat ~/channel_online.txt",
-        "useFirstResult": "true",
-      }
-    },
-    {
-      "id": "CHANNELID_VOICE",
-      "type": "command",
-      "command": "shellCommand.execute",
-      "args": {
-        "command": "cat ~/channel_voice.txt",
-        "useFirstResult": "true",
-      }
-    }
-  ],
+
   "version": "0.2.0",
   "configurations": [
     {
       "type": "lldb",
       "request": "launch",
       "name": "Debug executable 'dcs-dach-bot'",
-      "env": {
-        "DISCORD_TOKEN": "${input:DISCORD_TOKEN}",
-        "GUILD_ID": "${input:GUILD_ID}", 
-        "CHANNELID_ALL": "${input:CHANNELID_ALL}",
-        "CHANNELID_ONLINE": "${input:CHANNELID_ONLINE}",
-        "CHANNELID_VOICE": "${input:CHANNELID_VOICE}"
-      },
       "cargo": {
         "args": [
           "build",
