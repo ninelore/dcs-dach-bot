@@ -3,7 +3,4 @@ target/
 Cargo.lock
 **/*.rs.bk
 *.pdb
-serenity/
-README.md
-fly.toml
 .vscode/
