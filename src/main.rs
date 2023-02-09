@@ -102,7 +102,6 @@ async fn main() {
 
   // Use env file if available (for local testing only!)
   if dotenv::from_filename("dcs-dach-bot.env").ok().is_some() {
-    dotenv::from_filename("dcs-dach-bot.env").ok();
     println!(".env found and applied");
   }
 
