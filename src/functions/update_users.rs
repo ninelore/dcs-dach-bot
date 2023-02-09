@@ -1,10 +1,13 @@
 use std::env;
 
+use dotenv;
+
 use serenity::model::user::OnlineStatus;
 use serenity::model::prelude::{GuildId, ChannelId};
 use serenity::prelude::Context;
 
 pub async fn members(ctx: &Context, gid: GuildId) {
+  dotenv::dotenv().ok();
   let cid = env::var("CHANNELID_ALL").expect("channelid_all").parse::<u64>().expect("channelid_all: u64");
   let count = ctx.cache.guild(gid).unwrap().member_count;
   println!("Fetched amount overall: {}", count);
