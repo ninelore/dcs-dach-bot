@@ -12,6 +12,7 @@ use serenity::async_trait;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
+use serenity::model::prelude::{Message, Activity};
 use serenity::prelude::*;
 
 struct Handler {
@@ -48,6 +49,12 @@ impl EventHandler for Handler {
     }
   }
 
+  async fn message(&self, ctx: Context, msg: Message) {
+    if msg.is_private() && !msg.is_own(&ctx.cache) {
+      functions::modmsg::alert_moderators(&ctx, msg).await;
+    }
+  }
+
   async fn ready(&self, ctx: Context, ready: Ready) {
     println!("{} is connected!", ready.user.name);
 
@@ -66,6 +73,9 @@ impl EventHandler for Handler {
     .await;
 
     println!("I now have the following guild slash commands: {:#?}", commands);
+    
+    let stat = "DM's für Hilfe";
+    ctx.set_activity(Activity::listening(stat)).await;
   }
 
   async fn cache_ready(&self, ctx: Context, _guilds: Vec<GuildId>) {

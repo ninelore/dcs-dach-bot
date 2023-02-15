@@ -1,4 +1,4 @@
-use serenity::{prelude::Context, model::{prelude::{GuildId}, user::OnlineStatus}, builder::CreateApplicationCommand};
+use serenity::{prelude::Context, model::{prelude::{GuildId}, user::OnlineStatus, Permissions}, builder::CreateApplicationCommand};
 
 pub fn run(ctx: &Context, gid: GuildId) -> String {
   let count = ctx.cache.guild(gid).unwrap().members_with_status(OnlineStatus::Offline).len();
@@ -6,5 +6,5 @@ pub fn run(ctx: &Context, gid: GuildId) -> String {
 }
 
 pub fn register(command: &mut CreateApplicationCommand) -> &mut CreateApplicationCommand {
-  command.name("debug").description("Debug!")
+  command.name("debug").description("Debug!").default_member_permissions(Permissions::ADMINISTRATOR)
 }
