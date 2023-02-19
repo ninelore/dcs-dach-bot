@@ -4,7 +4,7 @@ use serenity::{model::{prelude::{ChannelId, Message, interaction::{Interaction, 
 
 pub async fn alert_moderators(ctx: &Context, msg: Message) {
 
-  let timeout: i64 = 30;
+  let timeout: i64 = 7200;
 
   let ch = msg.channel(&ctx).await.unwrap().private().unwrap();
   let bmsg = ch.messages(&ctx, |b| b).await.unwrap().into_iter()
