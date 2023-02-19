@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "augustocdias.tasks-shell-input",
+    "serayuzgur.crates",
+    "rust-lang.rust-analyzer"
+  ]
+}
