@@ -1,8 +1,12 @@
-use serenity::{prelude::Context, model::{prelude::{GuildId}, user::OnlineStatus, Permissions}, builder::CreateApplicationCommand};
+use serenity::{prelude::Context, model::{prelude::{GuildId}, Permissions}, builder::CreateApplicationCommand};
 
-pub fn run(ctx: &Context, gid: GuildId) -> String {
-  let count = ctx.cache.guild(gid).unwrap().members_with_status(OnlineStatus::Offline).len();
-  return format!("Members online: {}", count);
+pub fn run(ctx: &Context, _gid: GuildId) -> String {
+  let map = ctx.cache.private_channels().into_iter();
+  let len = ctx.cache.private_channels().len();
+  for (key, value) in map {
+    println!("{} / {}", key, value);
+  }
+  return format!("Hashmap size: {}", len);
 }
 
 pub fn register(command: &mut CreateApplicationCommand) -> &mut CreateApplicationCommand {
