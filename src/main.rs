@@ -79,7 +79,7 @@ impl EventHandler for Handler {
 
     println!("I now have the following guild slash commands: {:#?}", commands);
     
-    let stat = "Direktnachichten für Hilfe";
+    let stat = "Direktnachrichten für Hilfe";
     ctx.set_activity(Activity::listening(stat)).await;
   }
 
