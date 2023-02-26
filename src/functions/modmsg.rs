@@ -15,7 +15,7 @@ pub async fn alert_moderators(ctx: &Context, msg: Message) {
   }
  
   if SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).expect("Time error").as_secs() < (lastrequest + timeout).try_into().unwrap() {
-    if let Err(why) = msg.reply(&ctx.http, "(PH) Error Spam attempt").await {
+    if let Err(why) = msg.reply(&ctx.http, "Bitte warte etwas bevor du noch eine Anfrage sendest. \n \nPlease wait some time before you try to send another request.").await {
       println!("Error while answering DM: {:?}", why);
     }
   } else {
