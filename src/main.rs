@@ -121,7 +121,11 @@ async fn main() {
   }
 
   let token = env::var("DISCORD_TOKEN").expect("token");
-  let intents = GatewayIntents::non_privileged()
+  let intents = 
+      GatewayIntents::DIRECT_MESSAGES
+    | GatewayIntents::GUILDS
+    | GatewayIntents::GUILD_MESSAGES
+    // Priviledged
     | GatewayIntents::GUILD_MEMBERS
     | GatewayIntents::GUILD_PRESENCES;
 
