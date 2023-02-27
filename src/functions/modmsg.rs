@@ -56,6 +56,7 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
             })
           })
         })
+      //.flags()
     })
   .await
   .expect("Error sending message");

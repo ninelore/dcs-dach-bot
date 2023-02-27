@@ -1,12 +1,11 @@
-use serenity::{prelude::Context, model::{prelude::{GuildId}, Permissions}, builder::CreateApplicationCommand};
+use serenity::{prelude::Context, model::{prelude::{GuildId, interaction::Interaction}, Permissions}, builder::CreateApplicationCommand};
 
-pub fn run(ctx: &Context, _gid: GuildId) -> String {
-  let map = ctx.cache.private_channels().into_iter();
-  let len = ctx.cache.private_channels().len();
-  for (key, value) in map {
-    println!("{} / {}", key, value);
-  }
-  return format!("Hashmap size: {}", len);
+pub fn run(ctx: &Context, interaction: &Interaction, _gid: GuildId) -> String {
+  let _m = interaction.clone().application_command().unwrap().channel_id
+  .send_message(ctx, |m| {
+    m.content("Test1")
+  });
+  return "Echo".to_string()
 }
 
 pub fn register(command: &mut CreateApplicationCommand) -> &mut CreateApplicationCommand {
