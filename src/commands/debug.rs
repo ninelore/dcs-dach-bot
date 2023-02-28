@@ -1,11 +1,12 @@
-use serenity::{prelude::Context, model::{prelude::{GuildId, interaction::Interaction}, Permissions}, builder::CreateApplicationCommand};
+use serenity::{prelude::Context, model::{prelude::{interaction::Interaction}, Permissions}, builder::CreateApplicationCommand};
 
-pub fn run(ctx: &Context, interaction: &Interaction, _gid: GuildId) -> String {
+pub async fn run(ctx: &Context, interaction: &Interaction) {
   let _m = interaction.clone().application_command().unwrap().channel_id
   .send_message(ctx, |m| {
     m.content("Test1")
-  });
-  return "Echo".to_string()
+  })
+  .await
+  .expect("Error in command: debug");
 }
 
 pub fn register(command: &mut CreateApplicationCommand) -> &mut CreateApplicationCommand {
