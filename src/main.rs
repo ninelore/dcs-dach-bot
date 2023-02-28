@@ -13,7 +13,7 @@ use serenity::async_trait;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
-use serenity::model::prelude::{Message, Activity, ChannelId};
+use serenity::model::prelude::{Message, Activity};
 use serenity::prelude::*;
 
 struct Handler {
@@ -23,26 +23,26 @@ struct Handler {
 #[async_trait]
 impl EventHandler for Handler {
   async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-    let cid_mod = ChannelId(
-      env::var("CHANNELID_MOD")
-        .expect("Expected CHANNELID_MOD in environment")
+    let guild_id = GuildId(
+      env::var("GUILD_ID")
+        .expect("Expected GUILD_ID in environment")
         .parse()
-        .expect("CHANNELID_MOD must be an integer"),
+        .expect("GUILD_ID must be an integer"),
     );
 
     match &interaction {
       Interaction::ApplicationCommand(command) => {
-        match command.data.name.as_str() {
-          "debug" => commands::debug::run(&ctx, &interaction).await,
-          //"rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction).await,
-          _ => (),
+        let content = match command.data.name.as_str() {
+          "debug" => commands::debug::run(&ctx, &interaction , guild_id),
+          "rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction, guild_id),
+          _ => "not implemented :(".to_string(),
         };
   
         if let Err(why) = command
           .create_interaction_response(&ctx, |response| {
             response
               .kind(InteractionResponseType::ChannelMessageWithSource)
-              .interaction_response_data(|message| message.content("Error while processing command"))
+              .interaction_response_data(|message| message.content(content))
           }) 
           .await
         {
@@ -51,11 +51,7 @@ impl EventHandler for Handler {
       }
 
       Interaction::MessageComponent(_command) => {
-        if interaction.clone().message_component().unwrap().channel_id == cid_mod {
-          functions::modmsg::interaction(&ctx, interaction).await
-        } else {
-          //commands::rolepicker::interaction(&ctx, interaction);
-        }
+        functions::modmsg::interaction(&ctx, interaction).await;
       }
       
       _ => println!("INFO: Unhandled Interaction caught")
@@ -82,7 +78,7 @@ impl EventHandler for Handler {
     let commands = GuildId::set_application_commands(&guild_id, &ctx, |commands| {
       commands
         .create_application_command(|command| commands::debug::register(command))
-        //.create_application_command(|command| commands::rolepicker::register(command))
+        .create_application_command(|command| commands::rolepicker::register(command))
     })
     .await;
 

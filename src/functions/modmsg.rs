@@ -56,6 +56,7 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
             })
           })
         })
+      //.flags()
     })
   .await
   .expect("Error sending message");
@@ -74,7 +75,7 @@ pub async fn interaction(ctx: &Context, interaction: Interaction) {
   ];
 
   match interaction.clone().message_component().unwrap().data.custom_id.as_str() {
-  "bearbeiten" | "takeover" => interaction.clone().message_component().unwrap()
+  "bearbeiten" | "takeover" => interaction.message_component().unwrap()
     .create_interaction_response(&ctx, |ed| {
       ed.kind(InteractionResponseType::UpdateMessage).interaction_response_data(|d| {
         d.content("<@&691859336561164300>")
