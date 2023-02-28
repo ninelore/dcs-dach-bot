@@ -1,4 +1,5 @@
-use serenity::{prelude::Context, model::{prelude::{interaction::Interaction}, Permissions}, builder::CreateApplicationCommand};
+use serenity::{prelude::Context, all::Interaction, model::Permissions};
+
 
 pub async fn run(ctx: &Context, interaction: &Interaction) {
   let _m = interaction.clone().application_command().unwrap().channel_id

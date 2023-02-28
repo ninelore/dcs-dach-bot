@@ -9,12 +9,11 @@ use std::time::Duration;
 
 use dotenv;
 
+use serenity::all::{Interaction, ChannelId, InteractionResponseFlags};
 use serenity::async_trait;
-use serenity::model::application::interaction::{Interaction, InteractionResponseType};
-use serenity::model::gateway::Ready;
-use serenity::model::id::GuildId;
-use serenity::model::prelude::{Message, Activity, ChannelId};
-use serenity::prelude::*;
+use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage};
+use serenity::prelude::{EventHandler, Context};
+
 
 struct Handler {
   is_loop_running: AtomicBool,
@@ -31,7 +30,7 @@ impl EventHandler for Handler {
     );
 
     match &interaction {
-      Interaction::ApplicationCommand(command) => {
+      Interaction::Command(command) => {
         match command.data.name.as_str() {
           "debug" => commands::debug::run(&ctx, &interaction).await,
           //"rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction).await,
@@ -39,10 +38,8 @@ impl EventHandler for Handler {
         };
   
         if let Err(why) = command
-          .create_interaction_response(&ctx, |response| {
-            response
-              .kind(InteractionResponseType::ChannelMessageWithSource)
-              .interaction_response_data(|message| message.content("Error while processing command"))
+          .create_response(&ctx, CreateInteractionResponse::Message(CreateInteractionResponseMessage) {
+            r.
           }) 
           .await
         {
@@ -50,7 +47,7 @@ impl EventHandler for Handler {
         }
       }
 
-      Interaction::MessageComponent(_command) => {
+      Interaction::Component(command) => {
         if interaction.clone().message_component().unwrap().channel_id == cid_mod {
           functions::modmsg::interaction(&ctx, interaction).await
         } else {
@@ -79,7 +76,7 @@ impl EventHandler for Handler {
     );
 
     // GUILD COMMANDS
-    let commands = GuildId::set_application_commands(&guild_id, &ctx, |commands| {
+    let commands = GuildId::set_application_commands(guild_id, &ctx, |commands| {
       commands
         .create_application_command(|command| commands::debug::register(command))
         //.create_application_command(|command| commands::rolepicker::register(command))
