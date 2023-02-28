@@ -7,7 +7,5 @@ edition = "2021"
 
 [dependencies]
 dotenv = "0.15.0"
-mongodb = "2.3.1"
 serenity = { version = "0.11", default-features = false, features = ["builder", "client", "cache", "collector", "gateway", "rustls_backend", "model", "utils"] }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
-
