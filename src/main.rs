@@ -7,12 +7,13 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
+
 use dotenv;
 
-use serenity::all::{Interaction, ChannelId, InteractionResponseFlags};
-use serenity::async_trait;
-use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage};
-use serenity::prelude::{EventHandler, Context};
+use serenity::gateway::ActivityData;
+use serenity::prelude::{EventHandler, Context, GatewayIntents};
+use serenity::{async_trait, Client};
+use serenity::all::{Interaction, ChannelId, GuildId, Ready, Message};
 
 
 struct Handler {
@@ -36,15 +37,6 @@ impl EventHandler for Handler {
           //"rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction).await,
           _ => (),
         };
-  
-        if let Err(why) = command
-          .create_response(&ctx, CreateInteractionResponse::Message(CreateInteractionResponseMessage) {
-            r.
-          }) 
-          .await
-        {
-          println!("Cannot respond to slash command: {}", why);
-        }
       }
 
       Interaction::Component(command) => {
@@ -68,7 +60,7 @@ impl EventHandler for Handler {
   async fn ready(&self, ctx: Context, ready: Ready) {
     println!("{} is connected!", ready.user.name);
 
-    let guild_id = GuildId(
+    let guild_id = GuildId::new(
       env::var("GUILD_ID")
         .expect("Expected GUILD_ID in environment")
         .parse()
@@ -76,17 +68,16 @@ impl EventHandler for Handler {
     );
 
     // GUILD COMMANDS
-    let commands = GuildId::set_application_commands(guild_id, &ctx, |commands| {
-      commands
-        .create_application_command(|command| commands::debug::register(command))
-        //.create_application_command(|command| commands::rolepicker::register(command))
-    })
+    let commands = guild_id.set_application_commands(&ctx, vec![
+      commands::debug::register(),
+      //commands::rolepicker::register()
+    ])
     .await;
 
     println!("I now have the following guild slash commands: {:#?}", commands);
     
     let stat = "Direktnachrichten für Hilfe";
-    ctx.set_activity(Activity::listening(stat)).await;
+    ctx.set_activity(Some(ActivityData::listening(stat)));
   }
 
   async fn cache_ready(&self, ctx: Context, _guilds: Vec<GuildId>) {
@@ -94,7 +85,7 @@ impl EventHandler for Handler {
 
     let ctx = Arc::new(ctx);
 
-    let guild_id = GuildId(
+    let guild_id = GuildId::new(
       env::var("GUILD_ID")
         .expect("Expected GUILD_ID in environment")
         .parse()
