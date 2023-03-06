@@ -32,21 +32,20 @@ impl EventHandler for Handler {
 
     match &interaction {
       Interaction::Command(command) => {
-        match command.data.name.as_str() {
+        let _cmd = match command.data.name.as_str() {
           "debug" => commands::debug::run(&ctx, &interaction).await,
-          //"rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction).await,
-          _ => (),
+          "rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction).await,
+          &_ => Ok(()),
         };
       }
 
       Interaction::Component(_component) => {
         if interaction.clone().message_component().unwrap().channel_id == cid_mod {
-          functions::modmsg::interaction(&ctx, interaction).await
+          functions::modmsg::interaction(&ctx, &interaction).await
         } else {
-          //commands::rolepicker::interaction(&ctx, interaction);
+          //commands::rolepicker::create_picker(&ctx, &interaction).await;
         }
       }
-      
       _ => println!("INFO: Unhandled Interaction caught")
     }
   }
@@ -70,7 +69,7 @@ impl EventHandler for Handler {
     // GUILD COMMANDS
     let commands = guild_id.set_application_commands(&ctx, vec![
       commands::debug::register(),
-      //commands::rolepicker::register()
+      commands::rolepicker::register()
     ])
     .await;
 
