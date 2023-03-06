@@ -39,7 +39,7 @@ impl EventHandler for Handler {
         };
       }
 
-      Interaction::Component(command) => {
+      Interaction::Component(_component) => {
         if interaction.clone().message_component().unwrap().channel_id == cid_mod {
           functions::modmsg::interaction(&ctx, interaction).await
         } else {
