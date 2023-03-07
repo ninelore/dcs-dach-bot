@@ -1,6 +1,6 @@
 use std::{env, time::SystemTime};
 
-use serenity::{prelude::Context, all::{Message, MessageId, ChannelId, Interaction}, builder::{GetMessages, CreateInteractionResponseMessage, CreateInteractionResponse, CreateMessage, CreateEmbed, CreateEmbedFooter, CreateButton}, model::Timestamp};
+use serenity::{prelude::Context, all::{Message, MessageId, ChannelId, ComponentInteraction}, builder::{GetMessages, CreateInteractionResponseMessage, CreateInteractionResponse, CreateMessage, CreateEmbed, CreateEmbedFooter, CreateButton}, model::Timestamp};
 
 pub async fn alert_moderators(ctx: &Context, msg: Message) {
 
@@ -55,11 +55,11 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
   .expect("Error sending message");
 }
 
-pub async fn interaction(ctx: &Context, interaction: &Interaction) {
-  let msg = interaction.clone().message_component().expect("Error: message component").message;
+pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
+  let msg = component.clone().message;
   let footerdata: Vec<&str> = msg.embeds.first().unwrap().footer.as_ref().unwrap().text.split(",").collect();
   let oldmsg = ctx.http.get_message(ChannelId::new(footerdata[0].parse::<u64>().unwrap()), MessageId::new(footerdata[1].parse::<u64>().unwrap())).await.expect("Err: old msg not found");
-  let bearbeiter = interaction.clone().message_component().unwrap().member.unwrap().user.id.0;
+  let bearbeiter = component.clone().member.unwrap().user.id.0;
 
   let fields = vec![
     ("Benutzername", format!("<@{}>", oldmsg.author.id), true),
@@ -67,8 +67,8 @@ pub async fn interaction(ctx: &Context, interaction: &Interaction) {
     ("Nachricht", oldmsg.content, false)
   ];
 
-  match interaction.clone().message_component().unwrap().data.custom_id.as_str() {
-  "bearbeiten" | "takeover" => interaction.clone().message_component().unwrap()
+  match component.data.custom_id.as_str() {
+  "bearbeiten" | "takeover" => component
     .create_response(&ctx, CreateInteractionResponse::UpdateMessage(CreateInteractionResponseMessage::new()
       .content("<@&691859336561164300>")
       .embed(CreateEmbed::new()
@@ -83,7 +83,7 @@ pub async fn interaction(ctx: &Context, interaction: &Interaction) {
       .button(CreateButton::new("close").label("Schließen").style(serenity::model::prelude::ButtonStyle::Danger))
     ))
     .await.expect("Error while editing for interaction"),
-  "freigeben" => interaction.clone().message_component().unwrap()
+  "freigeben" => component
     .create_response(&ctx, CreateInteractionResponse::UpdateMessage(CreateInteractionResponseMessage::new()
     .content("<@&691859336561164300>")
       .embed(CreateEmbed::new()
@@ -98,7 +98,7 @@ pub async fn interaction(ctx: &Context, interaction: &Interaction) {
       .button(CreateButton::new("close").label("Schließen").style(serenity::model::prelude::ButtonStyle::Danger))
     ))
     .await.expect("Error while editing for interaction"),
-  "close" => interaction.clone().message_component().unwrap()
+  "close" => component
     .create_response(&ctx, CreateInteractionResponse::UpdateMessage(CreateInteractionResponseMessage::new()
       .content("Geschlossenes Ticket")
       .embed(CreateEmbed::new()

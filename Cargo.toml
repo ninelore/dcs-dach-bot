@@ -7,7 +7,8 @@ edition = "2021"
 
 [dependencies]
 dotenv = "0.15.0"
-mongodb = "2.3.1"
+#mongodb = "2.3.1"
+indexmap = "1.6.0"
 serenity = { git = "https://github.com/serenity-rs/serenity", branch = "next", default-features = false, features = ["builder", "client", "cache", "collector", "gateway", "rustls_backend", "model", "utils"] }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
 

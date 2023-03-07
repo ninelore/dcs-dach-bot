@@ -1,9 +1,9 @@
-use std::{collections::HashMap};
+use indexmap::IndexMap;
 
 #[allow(unused)]
-pub fn get_jets() -> HashMap<String, Vec<String>> {
+pub fn get_jets() -> IndexMap<String, Vec<String>> {
 
-  let mut models: HashMap<String, Vec<String>> = HashMap::new();
+  let mut models: IndexMap<String, Vec<String>> = IndexMap::new();
   models.insert("a10c".to_string(), vec!["A-10C Warthog".to_string(), "Modern".to_string()]);
   models.insert("ajs37".to_string(), vec!["AJS-37 Viggen".to_string(), "Kalter Krieg".to_string()]);
   models.insert("av8b".to_string(), vec!["AV-8B Night Attack V/STOL".to_string(), "Modern".to_string()]);
@@ -27,9 +27,9 @@ pub fn get_jets() -> HashMap<String, Vec<String>> {
 }
 
 #[allow(unused)]
-pub fn get_fc() -> HashMap<String, Vec<String>> {
+pub fn get_fc() -> IndexMap<String, Vec<String>> {
 
-  let mut models: HashMap<String, Vec<String>> = HashMap::new();
+  let mut models: IndexMap<String, Vec<String>> = IndexMap::new();
   models.insert("a10a".to_string(), vec!["A-10A".to_string(), "Kalter Krieg".to_string()]);
   models.insert("f15c".to_string(), vec!["F-15C Eagle".to_string(), "Modern".to_string()]);
   models.insert("mig29".to_string(), vec!["MiG-29".to_string(), "Kalter Krieg".to_string()]);
@@ -43,9 +43,9 @@ pub fn get_fc() -> HashMap<String, Vec<String>> {
 }
 
 #[allow(unused)]
-pub fn get_helis() -> HashMap<String, Vec<String>> {
+pub fn get_helis() -> IndexMap<String, Vec<String>> {
 
-  let mut models: HashMap<String, Vec<String>> = HashMap::new();
+  let mut models: IndexMap<String, Vec<String>> = IndexMap::new();
   models.insert("ah64d".to_string(), vec!["AH-64D".to_string(), "Hubschrauber".to_string(), "Modern".to_string()]);
   models.insert("ka50".to_string(), vec!["Black Shark".to_string(), "Hubschrauber".to_string(), "Kalter Krieg".to_string()]);
   models.insert("mi24".to_string(), vec!["Mi-24P Hind".to_string(), "Hubschrauber".to_string(), "Kalter Krieg".to_string()]);
@@ -58,9 +58,9 @@ pub fn get_helis() -> HashMap<String, Vec<String>> {
 }
 
 #[allow(unused)]
-pub fn get_props() -> HashMap<String, Vec<String>> {
+pub fn get_props() -> IndexMap<String, Vec<String>> {
 
-  let mut models: HashMap<String, Vec<String>> = HashMap::new();
+  let mut models: IndexMap<String, Vec<String>> = IndexMap::new();
   models.insert("bf109".to_string(), vec!["Bf 109 K-4 Kurfürst".to_string(), "WWII".to_string()]);
   models.insert("ce2".to_string(), vec!["Christen Eagle II".to_string(), "Modern".to_string()]);
   models.insert("fw190a8".to_string(), vec!["Fw 190 A-8 Anton".to_string(), "WWII".to_string()]);
@@ -72,6 +72,19 @@ pub fn get_props() -> HashMap<String, Vec<String>> {
   models.insert("spitfire".to_string(), vec!["Spitfire LF Mk. IX".to_string(), "WWII".to_string()]);
   models.insert("tf51".to_string(), vec!["TF-51D".to_string(), "Kalter Krieg".to_string()]);
   models.insert("yak52".to_string(), vec!["Yak-52".to_string(), "Kalter Krieg".to_string()]);
+
+  return models;
+
+}
+
+#[allow(unused)]
+pub fn get_all() -> IndexMap<String, Vec<String>> {
+
+  let mut models: IndexMap<String, Vec<String>> = IndexMap::new();
+  models.extend(get_jets());
+  models.extend(get_helis());
+  models.extend(get_props());
+  models.extend(get_fc());
 
   return models;
 

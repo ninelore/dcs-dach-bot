@@ -26,7 +26,6 @@ pub async fn members_online(ctx: &Context, gid: GuildId) {
     let _count2 = guild.members_with_status(OnlineStatus::Online).len() 
       + guild.members_with_status(OnlineStatus::Idle).len()
       + guild.members_with_status(OnlineStatus::DoNotDisturb).len();
-    
   };
   if let Err(why) = cid.edit(&ctx.http, EditChannel::new().name(format!("Mitglieder Online: {:?}", count2))).await {
     println!("Error while renaming: {:?}", why);

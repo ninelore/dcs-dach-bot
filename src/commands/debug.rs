@@ -1,13 +1,12 @@
-use serenity::{prelude::Context, all::Interaction, model::Permissions, builder::{CreateCommand, CreateMessage}};
+use serenity::{prelude::Context, model::Permissions, builder::{CreateCommand, CreateMessage}, all::CommandInteraction};
 
-pub async fn run(ctx: &Context, interaction: &Interaction) -> Result<(), serenity::Error> {
-  let _m = interaction.clone().application_command().unwrap().channel_id
+pub async fn run(ctx: &Context, command: &CommandInteraction) {
+  let _m = command.channel_id
   .send_message(ctx, CreateMessage::new()
     .content("Test1")
   )
   .await
   .expect("Error in command: debug");
-  Ok(())
 }
 
 pub fn register() -> CreateCommand {

@@ -13,7 +13,7 @@ use dotenv;
 use serenity::gateway::ActivityData;
 use serenity::prelude::{EventHandler, Context, GatewayIntents};
 use serenity::{async_trait, Client};
-use serenity::all::{Interaction, ChannelId, GuildId, Ready, Message};
+use serenity::all::{Interaction, GuildId, Ready, Message};
 
 
 struct Handler {
@@ -23,27 +23,20 @@ struct Handler {
 #[async_trait]
 impl EventHandler for Handler {
   async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-    let cid_mod = ChannelId(
-      env::var("CHANNELID_MOD")
-        .expect("Expected CHANNELID_MOD in environment")
-        .parse()
-        .expect("CHANNELID_MOD must be an integer"),
-    );
-
     match &interaction {
       Interaction::Command(command) => {
-        let _cmd = match command.data.name.as_str() {
-          "debug" => commands::debug::run(&ctx, &interaction).await,
-          "rolepicker" => commands::rolepicker::create_picker(&ctx, &interaction).await,
-          &_ => Ok(()),
+        match command.data.name.as_str() {
+          "debug" => commands::debug::run(&ctx, &command).await,
+          "rolepicker" => commands::rolepicker::create_picker(&ctx, &command).await,
+          _ => ()
         };
       }
 
-      Interaction::Component(_component) => {
-        if interaction.clone().message_component().unwrap().channel_id == cid_mod {
-          functions::modmsg::interaction(&ctx, &interaction).await
-        } else {
-          //commands::rolepicker::create_picker(&ctx, &interaction).await;
+      Interaction::Component(component) => {
+        match component.data.custom_id.as_str() {
+          "rolepicker" => commands::rolepicker::interaction(&ctx, &component).await,
+          "bearbeiten" | "takeover" | "freigeben" | "close" => functions::modmsg::interaction(&ctx, &component).await,
+          _ => (),
         }
       }
       _ => println!("INFO: Unhandled Interaction caught")
