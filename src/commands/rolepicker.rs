@@ -1,26 +1,25 @@
+use std::collections::HashMap;
+
 use serenity::all::ResolvedValue;
 use serenity::{prelude::Context, all::Interaction, model::Permissions};
 use serenity::builder::{CreateSelectMenuOption, CreateCommand, CreateCommandOption, CreateEmbed, CreateSelectMenu, CreateInteractionResponseMessage, CreateInteractionResponse, CreateSelectMenuKind};
 
-use crate::util::consts::get_models;
+use crate::util::consts::*;
 
 pub async fn create_picker(ctx: &Context, interaction: &Interaction) -> Result<(), serenity::Error> {
-  //if interaction.clone().application_command().unwrap().data.options().first().is_some() {
-    match interaction.clone().application_command().unwrap().data.options().first().unwrap().value {
-      ResolvedValue::Integer(1) => model_picker(ctx, interaction).await,
-      _ => model_picker(ctx, interaction).await,
-    }
-  //} else {
-  //  return model_picker(ctx, interaction).await
-  //}
+  match interaction.clone().application_command().unwrap().data.options().first().unwrap().value {
+    ResolvedValue::Integer(1) => role_picker(ctx, interaction, get_jets()).await,
+    ResolvedValue::Integer(2) => role_picker(ctx, interaction, get_helis()).await,
+    ResolvedValue::Integer(3) => role_picker(ctx, interaction, get_props()).await,
+    ResolvedValue::Integer(4) => role_picker(ctx, interaction, get_fc()).await,
+    _ => role_picker(ctx, interaction, get_jets()).await, //TODO: Other Roles
+  }
 }
 
-async fn model_picker(ctx: &Context, interaction: &Interaction) -> Result<(), serenity::Error> {
-  let models = get_models();
+async fn role_picker(ctx: &Context, interaction: &Interaction, roles: HashMap<String, Vec<String>>) -> Result<(), serenity::Error> {
   let mut options: Vec<CreateSelectMenuOption> = Vec::new();
-  for (key, _val) in models {
-    options.push(CreateSelectMenuOption::new(&key, &key));
-    println!("add {}", &key)
+  for (key, _val) in roles {
+    options.push(CreateSelectMenuOption::new(_val.first().unwrap(), &key));
   }
 
   let _picker = interaction.clone().application_command().unwrap()
@@ -44,7 +43,11 @@ pub fn register() -> CreateCommand {
     .description("Create a rolepicker!")
     .default_member_permissions(Permissions::MANAGE_CHANNELS)
     .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Was für ein Rolepicker?".to_string())
-      .add_int_choice("Module", 1)
-      .add_int_choice("Andere", 2)
+      .required(true)
+      .add_int_choice("Module: Jets", 1)
+      .add_int_choice("Module: Helis", 2)
+      .add_int_choice("Module: Propellerflugzeuge", 3)
+      .add_int_choice("Module: FC3", 4)
+      .add_int_choice("Andere", 0)
     ])
 }
