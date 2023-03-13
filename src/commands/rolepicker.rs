@@ -6,10 +6,10 @@ use crate::util::consts::*;
 
 pub async fn create_picker(ctx: &Context, command: &CommandInteraction) {
   match command.data.options().first().unwrap().value {
-    ResolvedValue::Integer(1) => role_picker(ctx, command, "Jets".to_string(), get_fc()).await,
-    ResolvedValue::Integer(2) => role_picker(ctx, command, "Helikopter".to_string(), get_helis()).await,
-    ResolvedValue::Integer(3) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_jets()).await,
-    ResolvedValue::Integer(4) => role_picker(ctx, command, "Low-fidelity / Flaming Cliffs".to_string(), get_props()).await,
+    ResolvedValue::Integer(1) => role_picker(ctx, command, "Flaming Cliffs 3".to_string(), get_fc()).await,
+    ResolvedValue::Integer(2) => role_picker(ctx, command, "Hubschrauber".to_string(), get_helis()).await,
+    ResolvedValue::Integer(3) => role_picker(ctx, command, "Strahlflugzeuge".to_string(), get_jets()).await,
+    ResolvedValue::Integer(4) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_props()).await,
     _ => role_picker(ctx, command, "Andere Rollen".to_string(), get_other()).await,
   }
 }
@@ -206,7 +206,7 @@ pub fn register() -> CreateCommand {
     .default_member_permissions(Permissions::MANAGE_CHANNELS)
     .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Was für ein Rolepicker?".to_string())
       .required(true)
-      .add_int_choice("Module: FC3", 1)
+      .add_int_choice("Module: Flaming Cliffs 3", 1)
       .add_int_choice("Module: Hubschrauber", 2)
       .add_int_choice("Module: Strahlflugzeuge", 3)
       .add_int_choice("Module: Propellerflugzeuge", 4)
