@@ -6,14 +6,14 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
+
 use dotenv;
 
-use serenity::async_trait;
-use serenity::model::application::interaction::{Interaction, InteractionResponseType};
-use serenity::model::gateway::Ready;
-use serenity::model::id::GuildId;
-use serenity::model::prelude::{Message, Activity};
-use serenity::prelude::*;
+use serenity::gateway::ActivityData;
+use serenity::prelude::{EventHandler, Context, GatewayIntents};
+use serenity::{async_trait, Client};
+use serenity::all::{Interaction, GuildId, Ready, Message};
+
 
 struct Handler {
   is_loop_running: AtomicBool,
@@ -22,33 +22,21 @@ struct Handler {
 #[async_trait]
 impl EventHandler for Handler {
   async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-    let guild_id = GuildId(
-      env::var("GUILD_ID")
-        .expect("Expected GUILD_ID in environment")
-        .parse()
-        .expect("GUILD_ID must be an integer"),
-    );
-
     match &interaction {
-      Interaction::ApplicationCommand(command) => {
-        let content = match command.data.name.as_str() {
-          "debug" => commands::debug::run(&ctx, guild_id),
-          _ => "not implemented :(".to_string(),
+      Interaction::Command(command) => {
+        match command.data.name.as_str() {
+          "debug" => commands::debug::run(&ctx, &command).await,
+          "rolepicker" => commands::rolepicker::create_picker(&ctx, &command).await,
+          _ => ()
         };
-  
-        if let Err(why) = command
-          .create_interaction_response(&ctx, |response| {
-            response
-              .kind(InteractionResponseType::ChannelMessageWithSource)
-              .interaction_response_data(|message| message.content(content))
-          })
-          .await
-        {
-          println!("Cannot respond to slash command: {}", why);
-        }
       }
-      Interaction::MessageComponent(_command) => {
-        functions::modmsg::interaction(&ctx, interaction).await;
+
+      Interaction::Component(component) => {
+        match component.data.custom_id.as_str() {
+          "rolepicker" => commands::rolepicker::interaction(&ctx, &component).await,
+          "bearbeiten" | "takeover" | "freigeben" | "close" => functions::modmsg::interaction(&ctx, &component).await,
+          _ => (),
+        }
       }
       _ => println!("INFO: Unhandled Interaction caught")
     }
@@ -63,7 +51,7 @@ impl EventHandler for Handler {
   async fn ready(&self, ctx: Context, ready: Ready) {
     println!("{} is connected!", ready.user.name);
 
-    let guild_id = GuildId(
+    let guild_id = GuildId::new(
       env::var("GUILD_ID")
         .expect("Expected GUILD_ID in environment")
         .parse()
@@ -71,16 +59,16 @@ impl EventHandler for Handler {
     );
 
     // GUILD COMMANDS
-    let commands = GuildId::set_application_commands(&guild_id, &ctx, |commands| {
-      commands
-        .create_application_command(|command| commands::debug::register(command))
-    })
+    let commands = guild_id.set_application_commands(&ctx, vec![
+      commands::debug::register(),
+      commands::rolepicker::register()
+    ])
     .await;
 
     println!("I now have the following guild slash commands: {:#?}", commands);
     
     let stat = "Direktnachrichten für Hilfe";
-    ctx.set_activity(Activity::listening(stat)).await;
+    ctx.set_activity(Some(ActivityData::listening(stat)));
   }
 
   async fn cache_ready(&self, ctx: Context, _guilds: Vec<GuildId>) {
@@ -88,7 +76,7 @@ impl EventHandler for Handler {
 
     let ctx = Arc::new(ctx);
 
-    let guild_id = GuildId(
+    let guild_id = GuildId::new(
       env::var("GUILD_ID")
         .expect("Expected GUILD_ID in environment")
         .parse()
