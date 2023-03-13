@@ -11,6 +11,8 @@ processes = []
   CHANNELID_MOD = "1076595614353215499"
   GUILD_ID = "691838795049599027"
 
+[deploy]
+  strategy = "bluegreen"
 
 [experimental]
   allowed_public_ports = []
