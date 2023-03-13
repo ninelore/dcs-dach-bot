@@ -1,4 +1,3 @@
-use indexmap::IndexMap;
 use serenity::all::{ResolvedValue, ComponentInteraction, CommandInteraction, Role, ComponentInteractionDataKind, RoleId};
 use serenity::{prelude::Context, model::Permissions};
 use serenity::builder::{CreateSelectMenuOption, CreateCommand, CreateCommandOption, CreateEmbed, CreateSelectMenu, CreateInteractionResponseMessage, CreateInteractionResponse, CreateSelectMenuKind, EditMessage};
@@ -15,10 +14,10 @@ pub async fn create_picker(ctx: &Context, command: &CommandInteraction) {
   }
 }
 
-async fn role_picker(ctx: &Context, command: &CommandInteraction, name: String, roles: IndexMap<String, Vec<String>>) {
+async fn role_picker(ctx: &Context, command: &CommandInteraction, name: String, roles: Vec<RoleOption>) {
   let mut options: Vec<CreateSelectMenuOption> = Vec::new();
-  for (key, val) in roles {
-    options.push(CreateSelectMenuOption::new(val.first().unwrap(), &key));
+  for roleop in roles {
+    options.push(CreateSelectMenuOption::new(roleop.name, roleop.id));
   }
 
   let _picker = command
@@ -40,16 +39,16 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let mut user = guild.member(&ctx, component.user.id).await.unwrap();
 
   let mut role_keys_cur: Vec<String> = Vec::new();
-  for (key, val) in get_all() {
+  for roleop in get_all() {
     let role_parsed: Role = {
-      let role = val.first().unwrap();
+      let role = roleop.id;
       let guild = ctx.cache.guild(gid).unwrap();
-      if guild.role_by_name(role).is_none() { continue; }
-      let role_parse = guild.role_by_name(role).unwrap().to_owned();
+      if guild.role_by_name(&roleop.name).is_none() { continue; }
+      let role_parse = guild.role_by_name(&roleop.name).unwrap().to_owned();
       role_parse
     };
     if component.clone().user.has_role(ctx, gid, role_parsed).await.unwrap() {
-      role_keys_cur.push(key);
+      role_keys_cur.push(roleop.id);
     }
   }
 
@@ -63,10 +62,10 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let mut role_ids_cat_add: Vec<RoleId> = Vec::new();
   let mut role_ids_cat_del: Vec<RoleId> = Vec::new();
 
-  if sel_roles.first().is_some() && get_other().contains_key(sel_roles.first().unwrap()) {
+  if sel_roles.first().is_some() && get_other().iter().any(|ro| &ro.id == sel_roles.first().unwrap()) {
     let roleid_parsed: RoleId = {
-      if guild.role_by_name(get_other().get_key_value(sel_roles.first().unwrap()).unwrap().1.first().unwrap()).is_none() { return; }
-      let role_parse = guild.role_by_name(get_other().get_key_value(sel_roles.first().unwrap()).unwrap().1.first().unwrap()).unwrap().to_owned();
+      if guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).is_none() { return; }
+      let role_parse = guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).unwrap().to_owned();
       role_parse.id
     };
     if user.roles.contains(&roleid_parsed) {
@@ -94,8 +93,8 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   
   for role in sel_roles.clone() {
     let roleid_parsed: RoleId = {
-      if guild.role_by_name(get_all().get_key_value(&role).unwrap().1.first().unwrap()).is_none() { continue; }
-      let role_parse = guild.role_by_name(get_all().get_key_value(&role).unwrap().1.first().unwrap()).unwrap().to_owned();
+      if guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).is_none() { continue; }
+      let role_parse = guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).unwrap().to_owned();
       role_parse.id
     };
     if role_keys_cur.contains(&role) {

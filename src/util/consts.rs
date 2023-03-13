@@ -1,7 +1,8 @@
+#[derive(PartialEq)]
 pub struct RoleOption {
-  id: String,
-  name: String,
-  add_role_names: Option<Vec<String>>
+  pub id: String,
+  pub name: String,
+  pub add_role_names: Option<Vec<String>>
 }
 
 fn build_role_option(id: String, name: String, add_roles: Option<Vec<String>>) -> RoleOption {
