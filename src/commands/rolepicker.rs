@@ -11,7 +11,7 @@ pub async fn create_picker(ctx: &Context, command: &CommandInteraction) {
     ResolvedValue::Integer(2) => role_picker(ctx, command, "Helikopter".to_string(), get_helis()).await,
     ResolvedValue::Integer(3) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_props()).await,
     ResolvedValue::Integer(4) => role_picker(ctx, command, "Low-fidelity / Flaming Cliffs".to_string(), get_fc()).await,
-    _ => role_picker(ctx, command, "Andere Rollen".to_string(), get_jets()).await, //TODO: Other Roles
+    _ => role_picker(ctx, command, "Andere Rollen".to_string(), get_other()).await,
   }
 }
 
@@ -26,7 +26,7 @@ async fn role_picker(ctx: &Context, command: &CommandInteraction, name: String, 
       .content("")
         .embed(CreateEmbed::new()
           .title(format!("Rollenwahl: {}", name))
-          .field("Wähle deine Module", format!(" "), false)
+          .field("Wähle deine Rollen", format!("Um eine Rolle zu entfernen, wähle sie erneut aus"), false)
         )
       .select_menu(CreateSelectMenu::new("rolepicker".to_string(), CreateSelectMenuKind::String { options: options }))
     ))
@@ -62,6 +62,36 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let mut role_ids_del: Vec<RoleId> = Vec::new();
   let mut role_ids_cat_add: Vec<RoleId> = Vec::new();
   let mut role_ids_cat_del: Vec<RoleId> = Vec::new();
+
+  if sel_roles.first().is_some() && get_other().contains_key(sel_roles.first().unwrap()) {
+    let roleid_parsed: RoleId = {
+      if guild.role_by_name(get_other().get_key_value(sel_roles.first().unwrap()).unwrap().1.first().unwrap()).is_none() { return; }
+      let role_parse = guild.role_by_name(get_other().get_key_value(sel_roles.first().unwrap()).unwrap().1.first().unwrap()).unwrap().to_owned();
+      role_parse.id
+    };
+    if user.roles.contains(&roleid_parsed) {
+      role_ids_del.push(roleid_parsed);
+    } else {
+      role_ids_add.push(roleid_parsed);
+    }
+  
+
+    if !role_ids_del.is_empty() {
+      role_ids_del.dedup();
+      if let Err(why) = user.remove_roles(ctx, role_ids_del.clone().as_slice()).await {
+        println!("Error while removing roles: {}", why);
+      } // */
+    }
+    if !role_ids_add.is_empty() {
+      role_ids_add.dedup();
+      if let Err(why) = user.add_roles(ctx, role_ids_add.clone().as_slice()).await {
+        println!("Error while adding roles: {}", why);
+      }
+    }
+    success(&ctx, &component).await;
+    return;
+  }
+  
   for role in sel_roles.clone() {
     let roleid_parsed: RoleId = {
       if guild.role_by_name(get_all().get_key_value(&role).unwrap().1.first().unwrap()).is_none() { continue; }
@@ -72,26 +102,26 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       role_ids_del.push(roleid_parsed);
       for add_role in get_all().get_key_value(&role).unwrap().1.clone() {
         if add_role.eq(&role) { continue; }
-        let roleid_parsed: RoleId = {
-          if guild.role_by_name(get_all().get_key_value(&add_role).unwrap().1.first().unwrap()).is_none() { continue; }
-          let role_parse = guild.role_by_name(get_all().get_key_value(&add_role).unwrap().1.first().unwrap()).unwrap().to_owned();
+        let add_roleid_parsed: RoleId = {
+          if guild.role_by_name(&add_role).is_none() { continue; }
+          let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
           role_parse.id
         };
-        if !user.roles.contains(&roleid_parsed) && !role_ids_cat_add.contains(&roleid_parsed) {
-          role_ids_cat_del.push(roleid_parsed)
+        if !user.roles.contains(&add_roleid_parsed) && !role_ids_cat_del.contains(&add_roleid_parsed) {
+          role_ids_cat_del.push(add_roleid_parsed)
         }
       }
     } else {
       role_ids_add.push(roleid_parsed);
       for add_role in get_all().get_key_value(&role).unwrap().1.clone() {
         if add_role.eq(&role) { continue; }
-        let roleid_parsed: RoleId = {
-          if guild.role_by_name(get_all().get_key_value(&add_role).unwrap().1.first().unwrap()).is_none() { continue; }
-          let role_parse = guild.role_by_name(get_all().get_key_value(&add_role).unwrap().1.first().unwrap()).unwrap().to_owned();
+        let add_roleid_parsed: RoleId = {
+          if guild.role_by_name(&add_role).is_none() { continue; }
+          let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
           role_parse.id
         };
-        if !user.roles.contains(&roleid_parsed) && !role_ids_cat_add.contains(&roleid_parsed) {
-          role_ids_cat_add.push(roleid_parsed)
+        if !user.roles.contains(&add_roleid_parsed) && !role_ids_cat_add.contains(&add_roleid_parsed) {
+          role_ids_cat_add.push(add_roleid_parsed)
         }
       }
     }
@@ -104,29 +134,63 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
     }
   }
 
+  if guild.role_by_name("Pilot").is_some() {
+    let roleid_pilot: RoleId = {
+      let role_parse = guild.role_by_name("Pilot").unwrap().to_owned();
+      role_parse.id
+    };
+    if role_keys_cur.is_empty() {
+      role_ids_cat_add.push(roleid_pilot)
+    } else if role_keys_cur.len().eq(&role_ids_del.len()) {
+      role_ids_cat_del.push(roleid_pilot)
+    }
+  }
+
+  let mut lenerr = false;
   let len = role_keys_cur.len() + role_ids_add.len() - role_ids_del.len();
   while len > 10 {
     role_ids_add.pop();
+    lenerr = true
   }
 
-  let mut err = false;
+  let mut err = String::new();
+  if lenerr {
+    err = "Du hast zu viele Modulrollen gewählt".to_string();
+  }
   if !role_ids_del.is_empty() {
+    role_ids_del.extend(role_ids_cat_del);
+    role_ids_del.dedup();
     if let Err(why) = user.remove_roles(ctx, role_ids_del.clone().as_slice()).await {
-      println!("Error while adding roles: {}", why);
-      err = true
+      println!("Error while removing roles: {}", why);
     } // */
   }
   if !role_ids_add.is_empty() {
+    role_ids_add.extend(role_ids_cat_add);
+    role_ids_add.dedup();
     if let Err(why) = user.add_roles(ctx, role_ids_add.clone().as_slice()).await {
       println!("Error while adding roles: {}", why);
-      err = true
     }
   } // */
   
-  if !err {
-    component.create_response(ctx, CreateInteractionResponse::Acknowledge).await.expect("Err while acknowledging ComponentInteraction");
-    component.clone().message.edit(ctx, EditMessage::new().content("")).await.expect("Err while editing rolepicker");
+  if err.is_empty() {
+    success(&ctx, &component).await
+  } else {
+    send_error(&ctx, &component, err).await
   }
+}
+
+async fn success(ctx: &Context, component: &ComponentInteraction) {
+  component.create_response(ctx, CreateInteractionResponse::Acknowledge).await.expect("Err while acknowledging ComponentInteraction");
+  component.clone().message.edit(ctx, EditMessage::new().content("")).await.expect("Err while editing rolepicker");
+}
+
+async fn send_error(ctx: &Context, component: &ComponentInteraction, msg: String) {
+  component.create_response(ctx, CreateInteractionResponse::Message(CreateInteractionResponseMessage::new()
+    .ephemeral(true)
+    .content(msg)
+  ))
+  .await
+  .expect("Error while sending error message")
 }
 
 pub fn register() -> CreateCommand {
