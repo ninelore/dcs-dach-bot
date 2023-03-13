@@ -16,7 +16,7 @@ pub fn get_jets() -> Vec<RoleOption> {
   models.push(build_role_option("a10c".to_string(), "Pilot A-10C Warthog".to_string(), Some(vec!["Modern".to_string()])));
   models.push(build_role_option("ajs37".to_string(), "Pilot AJS-37 Viggen".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("av8b".to_string(), "Pilot AV-8B Night Attack V/STOL".to_string(), Some(vec!["Modern".to_string()])));
-  models.push(build_role_option("c101".to_string(), "Pilot C-101 Aviojet".to_string(), Some(vec!["Modern".to_string()])));
+  models.push(build_role_option("c101".to_string(), "Pilot C-101 Aviojet".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("f18c".to_string(), "Pilot F/A-18C Hornet".to_string(), Some(vec!["Modern".to_string()])));
   models.push(build_role_option("f14p".to_string(), "Pilot F-14 Tomcat Pilot".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("f14r".to_string(), "Pilot F-14 Tomcat RIO".to_string(), Some(vec!["Kalter Krieg".to_string()])));
@@ -81,7 +81,7 @@ pub fn get_props() -> Vec<RoleOption> {
   models.push(build_role_option("p47".to_string(), "Pilot P-47D Thunderbolt".to_string(), Some(vec!["WWII".to_string()])));
   models.push(build_role_option("p51".to_string(), "Pilot P-51D Mustang".to_string(), Some(vec!["WWII".to_string()])));
   models.push(build_role_option("spitfire".to_string(), "Pilot Spitfire LF Mk. IX".to_string(), Some(vec!["WWII".to_string()])));
-  models.push(build_role_option("tf51".to_string(), "Pilot TF-51D".to_string(), Some(vec!["Kalter Krieg".to_string()])));
+  models.push(build_role_option("tf51".to_string(), "Pilot TF-51D".to_string(), Some(vec!["WWII".to_string()])));
   models.push(build_role_option("yak52".to_string(), "Pilot Yak-52".to_string(), Some(vec!["Kalter Krieg".to_string()])));
 
   return models;
