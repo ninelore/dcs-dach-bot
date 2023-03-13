@@ -39,7 +39,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let mut user = guild.member(&ctx, component.user.id).await.unwrap();
 
   // Get Users current roles as const IDs
-  let mut role_keys_cur: Vec<String> = Vec::new();
+  let mut roles_cur: Vec<RoleOption> = Vec::new();
   for roleop in get_all() {
     let role_parsed: Role = {
       let guild = ctx.cache.guild(gid).unwrap();
@@ -48,7 +48,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       role_parse
     };
     if component.clone().user.has_role(ctx, gid, role_parsed).await.unwrap() {
-      role_keys_cur.push(roleop.id);
+      roles_cur.push(roleop);
     }
   }
 
@@ -76,7 +76,6 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       role_ids_add.push(roleid_parsed);
     }
   
-
     if !role_ids_del.is_empty() {
       role_ids_del.dedup();
       if let Err(why) = user.remove_roles(ctx, role_ids_del.clone().as_slice()).await {
@@ -100,7 +99,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       let role_parse = guild.role_by_name(&get_all().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).unwrap().to_owned();
       role_parse.id
     };
-    if role_keys_cur.contains(&role) {
+    if roles_cur.iter().any(|p| p.id == role) {
       role_ids_del.push(roleid_parsed);
       for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names.clone().unwrap() { 
         let add_roleid_parsed: RoleId = {
@@ -108,8 +107,16 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
           let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
           role_parse.id
         };
-        if !user.roles.contains(&add_roleid_parsed) && !role_ids_cat_del.contains(&add_roleid_parsed) {
-          role_ids_cat_del.push(add_roleid_parsed)
+        if user.roles.contains(&add_roleid_parsed) {
+          let mut remove = true;
+          for orole in &roles_cur {
+            if orole.id != role && orole.add_role_names.as_ref().unwrap().contains(&add_role) {
+              remove = false
+            }
+          }
+          if remove == true {
+            role_ids_cat_del.push(add_roleid_parsed)
+          }
         }
       }
     } else {
@@ -120,7 +127,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
           let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
           role_parse.id
         };
-        if !user.roles.contains(&add_roleid_parsed) && !role_ids_cat_add.contains(&add_roleid_parsed) {
+        if !user.roles.contains(&add_roleid_parsed) {
           role_ids_cat_add.push(add_roleid_parsed)
         }
       }
@@ -139,15 +146,15 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       let role_parse = guild.role_by_name("Pilot").unwrap().to_owned();
       role_parse.id
     };
-    if role_keys_cur.is_empty() {
+    if roles_cur.is_empty() {
       role_ids_cat_add.push(roleid_pilot)
-    } else if role_keys_cur.len().eq(&role_ids_del.len()) {
+    } else if roles_cur.len().eq(&role_ids_del.len()) {
       role_ids_cat_del.push(roleid_pilot)
     }
   }
 
   let mut lenerr = false;
-  let len = role_keys_cur.len() + role_ids_add.len() - role_ids_del.len();
+  let len = roles_cur.len() + role_ids_add.len() - role_ids_del.len();
   while len > 10 {
     role_ids_add.pop();
     lenerr = true
