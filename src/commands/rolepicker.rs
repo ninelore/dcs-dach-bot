@@ -38,10 +38,10 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let guild = ctx.http.get_guild(gid).await.unwrap();
   let mut user = guild.member(&ctx, component.user.id).await.unwrap();
 
+  // Get Users current roles as const IDs
   let mut role_keys_cur: Vec<String> = Vec::new();
   for roleop in get_all() {
     let role_parsed: Role = {
-      let role = roleop.id;
       let guild = ctx.cache.guild(gid).unwrap();
       if guild.role_by_name(&roleop.name).is_none() { continue; }
       let role_parse = guild.role_by_name(&roleop.name).unwrap().to_owned();
@@ -52,6 +52,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
     }
   }
 
+  // Selected Roles to const IDs
   let sel_roles = match component.clone().data.kind {
     ComponentInteractionDataKind::StringSelect { values } => values,
     _ => vec!["Error: unexpected interaction caught".to_string()],
@@ -62,6 +63,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let mut role_ids_cat_add: Vec<RoleId> = Vec::new();
   let mut role_ids_cat_del: Vec<RoleId> = Vec::new();
 
+  // Other Roles' own logic
   if sel_roles.first().is_some() && get_other().iter().any(|ro| &ro.id == sel_roles.first().unwrap()) {
     let roleid_parsed: RoleId = {
       if guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).is_none() { return; }
@@ -91,16 +93,16 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
     return;
   }
   
+  // Parse selected role to RoleID vectors
   for role in sel_roles.clone() {
     let roleid_parsed: RoleId = {
-      if guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).is_none() { continue; }
-      let role_parse = guild.role_by_name(&get_other().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).unwrap().to_owned();
+      if guild.role_by_name(&get_all().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).is_none() { continue; }
+      let role_parse = guild.role_by_name(&get_all().iter().find( |ro| &ro.id == sel_roles.first().unwrap()).unwrap().name).unwrap().to_owned();
       role_parse.id
     };
     if role_keys_cur.contains(&role) {
       role_ids_del.push(roleid_parsed);
-      for add_role in get_all().get_key_value(&role).unwrap().1.clone() {
-        if add_role.eq(&role) { continue; }
+      for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names { 
         let add_roleid_parsed: RoleId = {
           if guild.role_by_name(&add_role).is_none() { continue; }
           let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
@@ -112,8 +114,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       }
     } else {
       role_ids_add.push(roleid_parsed);
-      for add_role in get_all().get_key_value(&role).unwrap().1.clone() {
-        if add_role.eq(&role) { continue; }
+      for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names {
         let add_roleid_parsed: RoleId = {
           if guild.role_by_name(&add_role).is_none() { continue; }
           let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
