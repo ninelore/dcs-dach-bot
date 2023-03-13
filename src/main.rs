@@ -1,5 +1,6 @@
 mod commands;
 mod functions;
+mod util;
 
 use std::env;
 use std::sync::Arc;
