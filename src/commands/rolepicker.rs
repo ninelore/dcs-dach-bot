@@ -102,7 +102,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
     };
     if role_keys_cur.contains(&role) {
       role_ids_del.push(roleid_parsed);
-      for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names { 
+      for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names.clone().unwrap() { 
         let add_roleid_parsed: RoleId = {
           if guild.role_by_name(&add_role).is_none() { continue; }
           let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
@@ -114,7 +114,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       }
     } else {
       role_ids_add.push(roleid_parsed);
-      for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names {
+      for add_role in get_all().iter().find(|p| p.id == role).unwrap().add_role_names.clone().unwrap() {
         let add_roleid_parsed: RoleId = {
           if guild.role_by_name(&add_role).is_none() { continue; }
           let role_parse = guild.role_by_name(&add_role).unwrap().to_owned();
