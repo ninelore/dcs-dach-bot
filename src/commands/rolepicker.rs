@@ -6,10 +6,10 @@ use crate::util::consts::*;
 
 pub async fn create_picker(ctx: &Context, command: &CommandInteraction) {
   match command.data.options().first().unwrap().value {
-    ResolvedValue::Integer(1) => role_picker(ctx, command, "Jets".to_string(), get_jets()).await,
+    ResolvedValue::Integer(1) => role_picker(ctx, command, "Jets".to_string(), get_fc()).await,
     ResolvedValue::Integer(2) => role_picker(ctx, command, "Helikopter".to_string(), get_helis()).await,
-    ResolvedValue::Integer(3) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_props()).await,
-    ResolvedValue::Integer(4) => role_picker(ctx, command, "Low-fidelity / Flaming Cliffs".to_string(), get_fc()).await,
+    ResolvedValue::Integer(3) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_jets()).await,
+    ResolvedValue::Integer(4) => role_picker(ctx, command, "Low-fidelity / Flaming Cliffs".to_string(), get_props()).await,
     _ => role_picker(ctx, command, "Andere Rollen".to_string(), get_other()).await,
   }
 }
@@ -201,15 +201,15 @@ async fn send_error(ctx: &Context, component: &ComponentInteraction, msg: String
 }
 
 pub fn register() -> CreateCommand {
-  CreateCommand::new("rolepicker")
-    .description("Create a rolepicker!")
+  CreateCommand::new("role")
+    .description("Create a role picker!")
     .default_member_permissions(Permissions::MANAGE_CHANNELS)
     .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Was für ein Rolepicker?".to_string())
       .required(true)
-      .add_int_choice("Module: Jets", 1)
-      .add_int_choice("Module: Helis", 2)
-      .add_int_choice("Module: Propellerflugzeuge", 3)
-      .add_int_choice("Module: FC3", 4)
+      .add_int_choice("Module: FC3", 1)
+      .add_int_choice("Module: Hubschrauber", 2)
+      .add_int_choice("Module: Strahlflugzeuge", 3)
+      .add_int_choice("Module: Propellerflugzeuge", 4)
       .add_int_choice("Andere", 0)
     ])
 }
