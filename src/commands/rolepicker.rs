@@ -204,7 +204,7 @@ pub fn register() -> CreateCommand {
   CreateCommand::new("role")
     .description("Erstelle eine Rollenzuweisung")
     .default_member_permissions(Permissions::MANAGE_CHANNELS)
-    .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Was für eine Rollenzuweisung?".to_string())
+    .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Welche Rollenzuweisung?".to_string())
       .required(true)
       .add_int_choice("Flaming Cliffs 3", 1)
       .add_int_choice("Hubschrauber", 2)

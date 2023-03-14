@@ -98,7 +98,7 @@ pub fn get_other() -> Vec<RoleOption> {
   roles.push(build_role_option("PVP".to_string(), "PVP".to_string(), Some(vec!["PVP".to_string()])));
   roles.push(build_role_option("Rotorheads".to_string(), "Rotorheads".to_string(), Some(vec!["Rotorheads".to_string()])));
   roles.push(build_role_option("RotorOps".to_string(), "RotorOps".to_string(), Some(vec!["RotorOps".to_string()])));
-  roles.push(build_role_option("VirtualReality".to_string(), "VirtualReality".to_string(), Some(vec!["Virtual Reality".to_string()])));
+  roles.push(build_role_option("VirtualReality".to_string(), "Virtual Reality".to_string(), Some(vec!["Virtual Reality".to_string()])));
 
 
 
