@@ -193,12 +193,13 @@ async fn success(ctx: &Context, component: &ComponentInteraction) {
 }
 
 async fn send_error(ctx: &Context, component: &ComponentInteraction, msg: String) {
+  component.clone().message.edit(ctx, EditMessage::new().content("")).await.expect("Err while editing rolepicker");
   component.create_response(ctx, CreateInteractionResponse::Message(CreateInteractionResponseMessage::new()
     .ephemeral(true)
     .content(msg)
   ))
   .await
-  .expect("Error while sending error message")
+  .expect("Error while sending error message");
 }
 
 pub fn register() -> CreateCommand {
