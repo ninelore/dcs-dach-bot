@@ -8,8 +8,8 @@ pub async fn create_picker(ctx: &Context, command: &CommandInteraction) {
   match command.data.options().first().unwrap().value {
     ResolvedValue::Integer(1) => role_picker(ctx, command, "Flaming Cliffs 3".to_string(), get_fc()).await,
     ResolvedValue::Integer(2) => role_picker(ctx, command, "Hubschrauber".to_string(), get_helis()).await,
-    ResolvedValue::Integer(3) => role_picker(ctx, command, "Strahlflugzeuge".to_string(), get_jets()).await,
-    ResolvedValue::Integer(4) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_props()).await,
+    ResolvedValue::Integer(3) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_props()).await,
+    ResolvedValue::Integer(4) => role_picker(ctx, command, "Strahlflugzeuge".to_string(), get_jets()).await,
     _ => role_picker(ctx, command, "Andere Rollen".to_string(), get_other()).await,
   }
 }
@@ -202,14 +202,14 @@ async fn send_error(ctx: &Context, component: &ComponentInteraction, msg: String
 
 pub fn register() -> CreateCommand {
   CreateCommand::new("role")
-    .description("Create a role picker!")
+    .description("Erstelle eine Rollenzuweisung")
     .default_member_permissions(Permissions::MANAGE_CHANNELS)
-    .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Was für ein Rolepicker?".to_string())
+    .set_options(vec![CreateCommandOption::new(serenity::all::CommandOptionType::Integer, "typ".to_string(), "Was für eine Rollenzuweisung?".to_string())
       .required(true)
-      .add_int_choice("Module: Flaming Cliffs 3", 1)
-      .add_int_choice("Module: Hubschrauber", 2)
-      .add_int_choice("Module: Strahlflugzeuge", 3)
-      .add_int_choice("Module: Propellerflugzeuge", 4)
-      .add_int_choice("Andere", 0)
+      .add_int_choice("Flaming Cliffs 3", 1)
+      .add_int_choice("Hubschrauber", 2)
+      .add_int_choice("Propellerflugzeuge", 3)
+      .add_int_choice("Strahlflugzeuge", 4)
+      .add_int_choice("Sonstige", 0)
     ])
 }
