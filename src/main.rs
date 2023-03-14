@@ -27,7 +27,7 @@ impl EventHandler for Handler {
       Interaction::Command(command) => {
         match command.data.name.as_str() {
           "debug" => commands::debug::run(&ctx, &command).await,
-          "rolepicker" => commands::rolepicker::create_picker(&ctx, &command).await,
+          "role" => commands::rolepicker::create_picker(&ctx, &command).await,
           _ => ()
         };
       }
