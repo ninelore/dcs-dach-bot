@@ -155,15 +155,16 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
 
   let mut lenerr = false;
   let len = roles_cur.len() + role_ids_add.len() - role_ids_del.len();
-  while len > 10 {
+  if len > 10 {
     role_ids_add.pop();
     lenerr = true
   }
 
   let mut err = String::new();
   if lenerr {
-    err = "Du hast zu viele Modulrollen gewählt".to_string();
+    err = format!("Du kannst maximal 10 Modulrollen auswählen <@{}>.", user.user.id);
   }
+
   if !role_ids_del.is_empty() {
     role_ids_del.extend(role_ids_cat_del);
     role_ids_del.dedup();
