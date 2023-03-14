@@ -25,6 +25,7 @@ pub fn get_jets() -> Vec<RoleOption> {
   models.push(build_role_option("f86".to_string(), "Pilot F-86F Sabre".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("jf17".to_string(), "Pilot JF-17 Thunder".to_string(), Some(vec!["Modern".to_string()])));
   models.push(build_role_option("l39".to_string(), "Pilot L-39 Albatros".to_string(), Some(vec!["Kalter Krieg".to_string()])));
+  models.push(build_role_option("mb339".to_string(), "Pilot MB-339".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("m2000".to_string(), "Pilot M-2000C".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("mig15".to_string(), "Pilot MiG-15bis".to_string(), Some(vec!["Kalter Krieg".to_string()])));
   models.push(build_role_option("mig19".to_string(), "Pilot MiG-19P Farmer".to_string(), Some(vec!["Kalter Krieg".to_string()])));
@@ -59,14 +60,12 @@ pub fn get_helis() -> Vec<RoleOption> {
   models.push(build_role_option("ka50".to_string(), "Pilot Black Shark".to_string(), Some(vec!["Hubschrauber".to_string(), "Kalter Krieg".to_string()])));
   models.push(build_role_option("mi24".to_string(), "Pilot Mi-24P Hind".to_string(), Some(vec!["Hubschrauber".to_string(), "Kalter Krieg".to_string()])));
   models.push(build_role_option("mi8".to_string(), "Pilot Mi-8MTV2 Magnificent Eight".to_string(), Some(vec!["Hubschrauber".to_string(), "Kalter Krieg".to_string()])));
-  models.push(build_role_option("uh1h".to_string(), "Pilot UH-1H Huey".to_string(), Some(vec!["Hubschrauber".to_string(), "Kalter Krieg".to_string()])));
   models.push(build_role_option("sa342".to_string(), "Pilot SA342 Gazelle".to_string(), Some(vec!["Hubschrauber".to_string(), "Kalter Krieg".to_string()])));
+  models.push(build_role_option("uh1h".to_string(), "Pilot UH-1H Huey".to_string(), Some(vec!["Hubschrauber".to_string(), "Kalter Krieg".to_string()])));
 
   return models;
 
 }
-
-//TODO: To Struct
 
 #[allow(unused)]
 pub fn get_props() -> Vec<RoleOption> {
@@ -100,9 +99,8 @@ pub fn get_other() -> Vec<RoleOption> {
   roles.push(build_role_option("RotorOps".to_string(), "RotorOps".to_string(), Some(vec!["RotorOps".to_string()])));
   roles.push(build_role_option("VirtualReality".to_string(), "Virtual Reality".to_string(), Some(vec!["Virtual Reality".to_string()])));
 
-
-
   return roles;
+
 }
 
 #[allow(unused)]

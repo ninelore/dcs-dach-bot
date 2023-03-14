@@ -10,7 +10,7 @@ pub async fn create_picker(ctx: &Context, command: &CommandInteraction) {
     ResolvedValue::Integer(2) => role_picker(ctx, command, "Hubschrauber".to_string(), get_helis()).await,
     ResolvedValue::Integer(3) => role_picker(ctx, command, "Propellerflugzeuge".to_string(), get_props()).await,
     ResolvedValue::Integer(4) => role_picker(ctx, command, "Strahlflugzeuge".to_string(), get_jets()).await,
-    _ => role_picker(ctx, command, "Andere Rollen".to_string(), get_other()).await,
+    _ => role_picker(ctx, command, "Sonstige Rollen".to_string(), get_other()).await,
   }
 }
 
@@ -24,8 +24,8 @@ async fn role_picker(ctx: &Context, command: &CommandInteraction, name: String, 
     .create_response(&ctx, CreateInteractionResponse::Message(CreateInteractionResponseMessage::new()
       .content("")
         .embed(CreateEmbed::new()
-          .title(format!("Rollenwahl: {}", name))
-          .field("Wähle deine Rollen", format!("Um eine Rolle zu entfernen, wähle sie erneut aus"), false)
+          .title(format!("{}", name))
+          .field("Wähle eine Rolle", format!("Um eine Rolle zu entfernen, wähle sie erneut aus"), false)
         )
       .select_menu(CreateSelectMenu::new("rolepicker".to_string(), CreateSelectMenuKind::String { options: options }))
     ))
