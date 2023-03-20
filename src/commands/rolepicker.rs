@@ -27,7 +27,7 @@ async fn role_picker(ctx: &Context, command: &CommandInteraction, name: String, 
           .title(format!("{}", name))
           .field("Wähle eine Rolle", format!("Um eine Rolle zu entfernen, wähle sie erneut aus"), false)
         )
-      .select_menu(CreateSelectMenu::new("rolepicker".to_string(), CreateSelectMenuKind::String { options: options }))
+      .select_menu(CreateSelectMenu::new("rolepicker".to_string(), CreateSelectMenuKind::String { options: options }).min_values(1).max_values(6))
     ))
     .await
     .expect("Err while sending rolepicker");
@@ -47,7 +47,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       let role_parse = guild.role_by_name(&roleop.name).unwrap().to_owned();
       role_parse
     };
-    if component.clone().user.has_role(ctx, gid, role_parsed).await.unwrap() {
+    if user.roles.contains(&role_parsed.id) {
       roles_cur.push(roleop);
     }
   }
