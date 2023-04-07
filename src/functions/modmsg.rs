@@ -49,7 +49,7 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
             .footer(CreateEmbedFooter::new(format!("{},{}", oldmsg.channel_id, oldmsg.id)))
             .timestamp(Timestamp::now())
         )
-        .button(CreateButton::new("bearbeiten").label("Bearbeiten").style(serenity::model::prelude::ButtonStyle::Primary))
+        .button(CreateButton::new("assign").label("Bearbeiten").style(serenity::model::prelude::ButtonStyle::Primary))
     )
   .await
   .expect("Error sending message");
@@ -68,7 +68,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   ];
 
   match component.data.custom_id.as_str() {
-  "bearbeiten" | "takeover" => component
+  "assign" => component
     .create_response(&ctx, CreateInteractionResponse::UpdateMessage(CreateInteractionResponseMessage::new()
       .content("<@&691859336561164300>")
       .embed(CreateEmbed::new()
@@ -83,7 +83,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
       .button(CreateButton::new("close").label("Schließen").style(serenity::model::prelude::ButtonStyle::Danger))
     ))
     .await.expect("Error while editing for interaction"),
-  "freigeben" => component
+  "unassign" => component
     .create_response(&ctx, CreateInteractionResponse::UpdateMessage(CreateInteractionResponseMessage::new()
     .content("<@&691859336561164300>")
       .embed(CreateEmbed::new()
