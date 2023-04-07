@@ -6,15 +6,11 @@ use std::env;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
-
-
 use dotenv;
-
 use serenity::gateway::ActivityData;
 use serenity::prelude::{EventHandler, Context, GatewayIntents};
 use serenity::{async_trait, Client};
 use serenity::all::{Interaction, GuildId, Ready, Message};
-
 
 struct Handler {
   is_loop_running: AtomicBool,
@@ -22,56 +18,6 @@ struct Handler {
 
 #[async_trait]
 impl EventHandler for Handler {
-  async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-    match &interaction {
-      Interaction::Command(command) => {
-        match command.data.name.as_str() {
-          "debug" => commands::debug::run(&ctx, &command).await,
-          "role" => commands::rolepicker::create_picker(&ctx, &command).await,
-          _ => ()
-        };
-      }
-
-      Interaction::Component(component) => {
-        match component.data.custom_id.as_str() {
-          "rolepicker" => commands::rolepicker::interaction(&ctx, &component).await,
-          "bearbeiten" | "takeover" | "freigeben" | "close" => functions::modmsg::interaction(&ctx, &component).await,
-          _ => (),
-        }
-      }
-      _ => println!("INFO: Unhandled Interaction caught")
-    }
-  }
-
-  async fn message(&self, ctx: Context, msg: Message) {
-    if msg.is_private() && !msg.is_own(&ctx) {
-      functions::modmsg::alert_moderators(&ctx, msg).await;
-    }
-  }
-
-  async fn ready(&self, ctx: Context, ready: Ready) {
-    println!("{} is connected!", ready.user.name);
-
-    let guild_id = GuildId::new(
-      env::var("GUILD_ID")
-        .expect("Expected GUILD_ID in environment")
-        .parse()
-        .expect("GUILD_ID must be an integer"),
-    );
-
-    // GUILD COMMANDS
-    let commands = guild_id.set_application_commands(&ctx, vec![
-      commands::debug::register(),
-      commands::rolepicker::register()
-    ])
-    .await;
-
-    println!("I now have the following guild slash commands: {:#?}", commands);
-    
-    let stat = "Direktnachrichten für Hilfe";
-    ctx.set_activity(Some(ActivityData::listening(stat)));
-  }
-
   async fn cache_ready(&self, ctx: Context, _guilds: Vec<GuildId>) {
     println!("Cache built successfully!");
 
@@ -99,6 +45,58 @@ impl EventHandler for Handler {
       self.is_loop_running.swap(true, Ordering::Relaxed);
     }
   }
+
+  async fn message(&self, ctx: Context, msg: Message) {
+    if msg.is_private() && !msg.is_own(&ctx) {
+      functions::modmsg::alert_moderators(&ctx, msg).await;
+    }
+  }
+
+  async fn ready(&self, ctx: Context, ready: Ready) {
+    println!("{} is connected!", ready.user.name);
+
+    let guild_id = GuildId::new(
+      env::var("GUILD_ID")
+        .expect("Expected GUILD_ID in environment")
+        .parse()
+        .expect("GUILD_ID must be an integer"),
+    );
+
+    // GUILD COMMANDS
+    let commands = guild_id.set_application_commands(&ctx, vec![
+      commands::debug::register(),
+      commands::rolepicker::register(),
+      commands::poll::register()
+    ])
+    .await;
+
+    println!("I now have the following guild slash commands: {:#?}", commands);
+    
+    let stat = "Direktnachrichten für Hilfe";
+    ctx.set_activity(Some(ActivityData::listening(stat)));
+  }
+
+  async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
+    match &interaction {
+      Interaction::Command(command) => {
+        match command.data.name.as_str() {
+          "debug" => commands::debug::run(&ctx, &command).await,
+          "role" => commands::rolepicker::create_picker(&ctx, &command).await,
+          "poll" => commands::poll::create_poll(&ctx, &command).await,
+          _ => ()
+        };
+      }
+
+      Interaction::Component(component) => {
+        match component.data.custom_id.as_str() {
+          "rolepicker" => commands::rolepicker::interaction(&ctx, &component).await,
+          "assign" | "unassign" | "close" => functions::modmsg::interaction(&ctx, &component).await,
+          _ => (),
+        }
+      }
+      _ => println!("INFO: Unhandled Interaction caught")
+    }
+  }
 }
 
 #[tokio::main]
@@ -114,7 +112,7 @@ async fn main() {
       GatewayIntents::DIRECT_MESSAGES
     | GatewayIntents::GUILDS
     | GatewayIntents::GUILD_MESSAGES
-    // Priviledged
+    // Privileged
     | GatewayIntents::GUILD_MEMBERS
     | GatewayIntents::GUILD_PRESENCES;
 
