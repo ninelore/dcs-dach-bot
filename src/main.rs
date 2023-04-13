@@ -63,10 +63,10 @@ impl EventHandler for Handler {
     );
 
     // GUILD COMMANDS
-    let commands = guild_id.set_application_commands(&ctx, vec![
+    let commands = guild_id.set_commands(&ctx, vec![
       commands::debug::register(),
       commands::rolepicker::register(),
-      commands::poll::register()
+      commands::poll_create::register()
     ])
     .await;
 
@@ -82,7 +82,7 @@ impl EventHandler for Handler {
         match command.data.name.as_str() {
           "debug" => commands::debug::run(&ctx, &command).await,
           "role" => commands::rolepicker::create_picker(&ctx, &command).await,
-          "poll" => commands::poll::create_poll(&ctx, &command).await,
+          "create-poll" => commands::poll_create::create_poll(&ctx, &command).await,
           _ => ()
         };
       }
