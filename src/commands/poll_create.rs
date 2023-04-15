@@ -22,29 +22,28 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
     "5️⃣".to_string(),
     "6️⃣".to_string(),
   ];
-  for i in command.clone().data.options {
+
+  for i in &command.data.options.clone() {
     match i.name.clone().as_str() {
-      "frage" => frage = format!("Umfrage: {}", i.value.as_str().unwrap().to_string()),
+      "frage" => frage = format!("Umfrage: {}", i.value.as_str().unwrap()),
       "everyone" => everyone = true,
       "ping" => ping = i.value.as_role_id().unwrap(),
       _ => {
-        if i.value.clone().as_str().is_some() {
-          answers.push((
-            i.name.clone().as_str().to_string(),
-            i.value.clone().as_str().unwrap().to_string(),
-          ));
+        if let Some(value) = i.value.as_str() {
+          answers.push((i.name.clone().as_str().to_string(), value.to_string()));
         }
       }
     }
   }
+
   for i in answers.clone() {
-    let icon = react_icons[i.0.split("-").last().unwrap().parse::<usize>().unwrap() - 1].clone();
+    let icon = react_icons[i.0.split('-').last().unwrap().parse::<usize>().unwrap() - 1].clone();
     answerfields.push((format!("{} | {}", icon, i.1), String::new(), false))
   }
 
   if everyone {
     content = "@everyone".to_string()
-  } else if ping.to_role_cached(&ctx).is_some() {
+  } else if ping.to_role_cached(ctx).is_some() {
     content = format!("<@&{}>", ping.0)
   }
 
@@ -61,11 +60,8 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
     .await
     .expect("Err while sending message");
 
-  let channel = command
-    .channel_id
-    .to_channel(&ctx)
-    .await
-    .unwrap()
+  let channel = command.channel_id.to_channel(&ctx).await.unwrap();
+  let channel = channel
     .guild()
     .expect("Err no guild. How tf did this happen????");
   let poll = {
@@ -80,12 +76,12 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
       .clone();
     poll
   };
+
   for i in answers.clone() {
-    let num = i.0.split("-").last().unwrap().parse::<usize>().unwrap();
-    poll
-      .react(&ctx, Unicode(react_icons[num - 1].clone()))
-      .await
-      .expect("Err couldnt react");
+    let num = i.0.split('-').last().unwrap().parse::<usize>().unwrap();
+    let reaction_type = Unicode(react_icons[num - 1].clone());
+    let poll = poll.react(&ctx, reaction_type).await;
+    poll.expect("Err couldnt react");
   }
 }
 

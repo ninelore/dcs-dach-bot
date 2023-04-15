@@ -116,7 +116,7 @@ pub fn get_jets() -> Vec<RoleOption> {
     Some(vec!["Kalter Krieg"]),
   ));
 
-  return models;
+  models
 }
 
 #[allow(unused)]
@@ -158,7 +158,7 @@ pub fn get_fc() -> Vec<RoleOption> {
     Some(vec!["Kalter Krieg"]),
   ));
 
-  return models;
+  models
 }
 
 #[allow(unused)]
@@ -195,7 +195,7 @@ pub fn get_helis() -> Vec<RoleOption> {
     Some(vec!["Hubschrauber", "Kalter Krieg"]),
   ));
 
-  return models;
+  models
 }
 
 #[allow(unused)]
@@ -249,7 +249,7 @@ pub fn get_props() -> Vec<RoleOption> {
     Some(vec!["Kalter Krieg"]),
   ));
 
-  return models;
+  models
 }
 
 #[allow(unused)]
@@ -263,7 +263,7 @@ pub fn get_other() -> Vec<RoleOption> {
   roles.push(RoleOption::new("RotorOps", "RotorOps", None));
   roles.push(RoleOption::new("VirtualReality", "Virtual Reality", None));
 
-  return roles;
+  roles
 }
 
 #[allow(unused)]
@@ -274,5 +274,5 @@ pub fn get_all() -> Vec<RoleOption> {
   models.extend(get_props());
   models.extend(get_fc());
 
-  return models;
+  models
 }

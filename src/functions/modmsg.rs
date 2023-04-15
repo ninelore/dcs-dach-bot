@@ -1,14 +1,12 @@
 use std::{env, time::SystemTime};
 
-use serenity::{
-  all::{ChannelId, ComponentInteraction, Message, MessageId},
-  builder::{
-    CreateButton, CreateEmbed, CreateEmbedFooter, CreateInteractionResponse,
-    CreateInteractionResponseMessage, CreateMessage, GetMessages,
-  },
-  model::Timestamp,
-  prelude::Context,
+use serenity::all::{ChannelId, ComponentInteraction, Message, MessageId};
+use serenity::builder::{
+  CreateButton, CreateEmbed, CreateEmbedFooter, CreateInteractionResponse,
+  CreateInteractionResponseMessage, CreateMessage, GetMessages,
 };
+use serenity::client::Context;
+use serenity::model::Timestamp;
 
 pub async fn alert_moderators(ctx: &Context, msg: Message) {
   let timeout: i64 = 7200;
@@ -37,7 +35,7 @@ pub async fn alert_moderators(ctx: &Context, msg: Message) {
     if let Err(why) = msg.reply_ping(&ctx.http, "Danke, dass Du uns kontaktiert hast. Deine Anfrage wird bearbeitet. \n \nThank you for contacting us. Your request is being processed.").await {
       println!("Error while answering DM: {:?}", why);
     }
-    mod_announcement(&ctx, msg).await;
+    mod_announcement(ctx, msg).await;
   }
 }
 
@@ -55,7 +53,7 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
       .expect("channelid_mod is no integer"),
   );
 
-  let _msg = cid
+  cid
     .send_message(
       &ctx,
       CreateMessage::new()
@@ -64,7 +62,7 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
           CreateEmbed::new()
             .title(format!("Anfrage von {}", oldmsg.author.name))
             .fields(fields)
-            .field("Bearbeiter", format!(" "), true)
+            .field("Bearbeiter", " ".to_string(), true)
             .field("Status", "Offen", true)
             .footer(CreateEmbedFooter::new(format!(
               "{},{}",
@@ -84,17 +82,8 @@ async fn mod_announcement(ctx: &Context, oldmsg: Message) {
 
 pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let msg = component.clone().message;
-  // let footer =
-  let footer: Vec<&str> = msg
-    .embeds
-    .first()
-    .unwrap()
-    .footer
-    .as_ref()
-    .unwrap()
-    .text
-    .split(",")
-    .collect();
+  let embed = msg.embeds.first().unwrap();
+  let footer: Vec<&str> = embed.footer.as_ref().unwrap().text.split(',').collect();
   let oldmsg = ctx
     .http
     .get_message(
@@ -154,7 +143,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
               CreateEmbed::new()
                 .title(format!("Anfrage von {}", oldmsg.author.name))
                 .fields(fields)
-                .field("Bearbeiter", format!(" "), true)
+                .field("Bearbeiter", " ".to_string(), true)
                 .field("Status", "Offen", true)
                 .footer(CreateEmbedFooter::new(format!(
                   "{},{}",

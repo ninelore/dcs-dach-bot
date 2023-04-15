@@ -8,7 +8,7 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
   let link = command.data.options.first().unwrap();
   let link = link.value.as_str().unwrap().to_string();
   let ids = {
-    let chunks: Vec<_> = link.split("/").collect();
+    let chunks: Vec<_> = link.split('/').collect();
     let ids = chunks.iter().rev().take(2);
     let ids: Vec<_> = ids.filter_map(|p| p.parse::<u64>().ok()).collect();
     ids

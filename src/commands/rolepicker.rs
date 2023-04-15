@@ -40,21 +40,21 @@ async fn role_picker(
     options.push(CreateSelectMenuOption::new(roleop.name, roleop.id));
   }
 
-  let _picker = command
+  command
     .create_response(
       &ctx,
       CreateInteractionResponse::Message(
         CreateInteractionResponseMessage::new()
           .content("")
-          .embed(CreateEmbed::new().title(format!("{}", name)).field(
+          .embed(CreateEmbed::new().title(name.to_string()).field(
             "Wähle eine Rolle",
-            format!("Um eine Rolle zu entfernen, wähle sie erneut aus"),
+            "Um eine Rolle zu entfernen, wähle sie erneut aus".to_string(),
             false,
           ))
           .select_menu(
             CreateSelectMenu::new(
               "rolepicker".to_string(),
-              CreateSelectMenuKind::String { options: options },
+              CreateSelectMenuKind::String { options },
             )
             .min_values(1)
             .max_values(6),
@@ -149,7 +149,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
         println!("Error while adding roles: {}", why);
       }
     }
-    success(&ctx, &component).await;
+    success(ctx, component).await;
     return;
   }
 
@@ -204,7 +204,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
               remove = false
             }
           }
-          if remove == true {
+          if remove {
             role_ids_cat_del.push(add_roleid_parsed)
           }
         }
@@ -285,9 +285,9 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
     }
   } // */
   if err.is_empty() {
-    success(&ctx, &component).await
+    success(ctx, component).await
   } else {
-    send_error(&ctx, &component, err).await
+    send_error(ctx, component, err).await
   }
 }
 

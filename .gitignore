@@ -1,6 +1,18 @@
-debug/
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Rust
 target/
 Cargo.lock
+/target/
 **/*.rs.bk
 *.pdb
 fly.toml
+
+# Coverage
+/coverage
+build_rs_cov.profraw
