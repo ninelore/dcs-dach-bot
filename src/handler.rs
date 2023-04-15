@@ -1,16 +1,14 @@
 use crate::commands;
 use crate::functions;
-use crate::util;
 
-use std::env;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
 use serenity::all::{GuildId, Interaction, Message, Ready};
+use serenity::async_trait;
 use serenity::gateway::ActivityData;
-use serenity::prelude::{Context, EventHandler, GatewayIntents};
-use serenity::{async_trait, Client};
+use serenity::prelude::{Context, EventHandler};
 
 pub struct Handler {
   guild_id: GuildId,
@@ -56,15 +54,9 @@ impl EventHandler for Handler {
   async fn ready(&self, ctx: Context, ready: Ready) {
     println!("{} is connected!", ready.user.name);
 
-    let guild_id = GuildId::new(
-      env::var("GUILD_ID")
-        .expect("Expected GUILD_ID in environment")
-        .parse()
-        .expect("GUILD_ID must be an integer"),
-    );
-
+    let gid = self.guild_id;
     // GUILD COMMANDS
-    let commands = guild_id
+    let commands = gid
       .set_commands(
         &ctx,
         vec![
@@ -76,10 +68,10 @@ impl EventHandler for Handler {
       )
       .await;
 
-    println!(
-      "I now have the following guild slash commands: {:#?}",
-      commands
-    );
+    match commands {
+      Ok(_) => println!("Commands registered successfully!"),
+      Err(err) => println!("{err:#?}"),
+    }
 
     let stat = "Direktnachrichten für Hilfe";
     ctx.set_activity(Some(ActivityData::listening(stat)));

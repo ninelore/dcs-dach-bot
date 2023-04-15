@@ -29,7 +29,6 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
     return;
   }
 
-  assert_eq!(ids.len(), 2);
   dbg!(&ids);
 
   todo!()

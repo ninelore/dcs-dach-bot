@@ -4,20 +4,16 @@ mod handler;
 mod util;
 
 use std::env;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
 
-use serenity::all::{GuildId, Interaction, Message, Ready};
-use serenity::gateway::ActivityData;
-use serenity::prelude::{Context, EventHandler, GatewayIntents};
-use serenity::{async_trait, Client};
+use serenity::all::GuildId;
+use serenity::prelude::GatewayIntents;
+use serenity::Client;
 
 #[tokio::main]
 async fn main() {
   // Use env file if available (for local testing only!)
   if dotenv::from_filename("dcs-dach-bot.env").is_ok() {
-    println!(".env found and applied");
+    println!(".env found and applied!");
   }
 
   let token = env::var("DISCORD_TOKEN").expect("the token should be present");
