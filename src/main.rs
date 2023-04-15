@@ -2,15 +2,15 @@ mod commands;
 mod functions;
 mod util;
 
-use std::env;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::Duration;
 use dotenv;
+use serenity::all::{GuildId, Interaction, Message, Ready};
 use serenity::gateway::ActivityData;
-use serenity::prelude::{EventHandler, Context, GatewayIntents};
+use serenity::prelude::{Context, EventHandler, GatewayIntents};
 use serenity::{async_trait, Client};
-use serenity::all::{Interaction, GuildId, Ready, Message};
+use std::env;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::time::Duration;
 
 struct Handler {
   is_loop_running: AtomicBool,
@@ -31,7 +31,6 @@ impl EventHandler for Handler {
     );
 
     if !self.is_loop_running.load(Ordering::Relaxed) {
-
       let ctx1 = Arc::clone(&ctx);
       tokio::spawn(async move {
         loop {
@@ -63,15 +62,23 @@ impl EventHandler for Handler {
     );
 
     // GUILD COMMANDS
-    let commands = guild_id.set_commands(&ctx, vec![
-      commands::debug::register(),
-      commands::rolepicker::register(),
-      commands::poll_create::register()
-    ])
-    .await;
+    let commands = guild_id
+      .set_commands(
+        &ctx,
+        vec![
+          commands::debug::register(),
+          commands::rolepicker::register(),
+          commands::poll_create::register(),
+          commands::poll_view::register(),
+        ],
+      )
+      .await;
 
-    println!("I now have the following guild slash commands: {:#?}", commands);
-    
+    println!(
+      "I now have the following guild slash commands: {:#?}",
+      commands
+    );
+
     let stat = "Direktnachrichten für Hilfe";
     ctx.set_activity(Some(ActivityData::listening(stat)));
   }
@@ -80,36 +87,33 @@ impl EventHandler for Handler {
     match &interaction {
       Interaction::Command(command) => {
         match command.data.name.as_str() {
-          "debug" => commands::debug::run(&ctx, &command).await,
-          "role" => commands::rolepicker::create_picker(&ctx, &command).await,
-          "create-poll" => commands::poll_create::create_poll(&ctx, &command).await,
-          _ => ()
+          "debug" => commands::debug::run(&ctx, command).await,
+          "role" => commands::rolepicker::create_picker(&ctx, command).await,
+          "create-poll" => commands::poll_create::create_poll(&ctx, command).await,
+          "view-poll" => commands::poll_view::view_poll(&ctx, command).await,
+          _ => (),
         };
       }
 
-      Interaction::Component(component) => {
-        match component.data.custom_id.as_str() {
-          "rolepicker" => commands::rolepicker::interaction(&ctx, &component).await,
-          "assign" | "unassign" | "close" => functions::modmsg::interaction(&ctx, &component).await,
-          _ => (),
-        }
-      }
-      _ => println!("INFO: Unhandled Interaction caught")
+      Interaction::Component(component) => match component.data.custom_id.as_str() {
+        "rolepicker" => commands::rolepicker::interaction(&ctx, component).await,
+        "assign" | "unassign" | "close" => functions::modmsg::interaction(&ctx, component).await,
+        _ => (),
+      },
+      _ => println!("INFO: Unhandled Interaction caught"),
     }
   }
 }
 
 #[tokio::main]
 async fn main() {
-
   // Use env file if available (for local testing only!)
   if dotenv::from_filename("dcs-dach-bot.env").ok().is_some() {
     println!(".env found and applied");
   }
 
   let token = env::var("DISCORD_TOKEN").expect("token");
-  let intents = 
-      GatewayIntents::DIRECT_MESSAGES
+  let intents = GatewayIntents::DIRECT_MESSAGES
     | GatewayIntents::GUILDS
     | GatewayIntents::GUILD_MESSAGES
     // Privileged
