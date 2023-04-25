@@ -61,9 +61,7 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
     .expect("Err while sending message");
 
   let channel = command.channel_id.to_channel(&ctx).await.unwrap();
-  let channel = channel
-    .guild()
-    .expect("Err no guild. How tf did this happen????");
+  let channel = channel.guild().unwrap();
   let poll = {
     let msgs = channel
       .messages(&ctx, GetMessages::new().limit(3))
