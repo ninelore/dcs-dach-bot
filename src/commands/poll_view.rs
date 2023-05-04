@@ -1,4 +1,4 @@
-use serenity::all::{CommandInteraction, CommandOptionType, Context};
+use serenity::all::{CommandInteraction, CommandOptionType, Context, Message};
 use serenity::builder::{
   CreateCommand, CreateCommandOption, CreateEmbed, CreateInteractionResponse,
   CreateInteractionResponseMessage,
@@ -14,33 +14,36 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
     "5️⃣".to_string(),
     "6️⃣".to_string(),
   ];
-  let link = command.data.options.first().unwrap();
-  let link_str = link.value.as_str().unwrap().to_string();
-  let ids = {
-    // TODO: Aus link_str kommt BS raus. Wieso???
-    // Bsp: "https://discord.com/channels/1028451968588451920/1040597438597173279/1096193249904971826"
-    let chunks: Vec<_> = link_str.split('/').collect();
-    let ids = chunks.iter().rev().take(2);
-    let ids: Vec<_> = ids.filter_map(|p| p.parse::<u64>().ok()).collect();
-    ids
+
+  let cid = command.clone().data.options[0]
+    .value
+    .as_channel_id()
+    .unwrap();
+  let mid_str = {
+    let t = command.clone().data.options[1]
+      .value
+      .as_str()
+      .unwrap()
+      .to_string();
+    t
   };
 
-  if ids.len() != 2 {
-    command
-      .create_response(
-        &ctx,
-        CreateInteractionResponse::Message(
-          CreateInteractionResponseMessage::new()
-            .ephemeral(true)
-            .content("Ungültiger Nachichtenlink!"),
-        ),
-      )
-      .await
-      .unwrap();
+  let mid = mid_str.parse::<u64>();
+  let msg: Message;
+  let msg_t = ctx.cache.message(cid, mid.clone().unwrap());
+  if mid.is_ok() {
+    if msg_t.is_some() {
+      msg = msg_t.unwrap()
+    } else {
+      error_msg(&ctx, &command).await;
+      println!("message anhand id nicht gefunden: {}", mid.unwrap());
+      return;
+    }
+  } else {
+    println!("mid parsing err");
+    error_msg(&ctx, &command).await;
     return;
   }
-
-  let msg = ctx.cache.message(ids[0], ids[1]).unwrap();
 
   let mut data: Vec<(String, String, u64)> = Vec::new();
   for (i, reaction) in msg.reactions.iter().enumerate() {
@@ -72,7 +75,21 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
       ),
     )
     .await
-    .expect("Couldnt create response. API down or missing permissions?");
+    .expect("API down or missing permissions?");
+}
+
+async fn error_msg(ctx: &Context, command: &CommandInteraction) {
+  command
+    .create_response(
+      &ctx,
+      CreateInteractionResponse::Message(
+        CreateInteractionResponseMessage::new()
+          .ephemeral(true)
+          .content("Ungültige Nachichten-ID!"),
+      ),
+    )
+    .await
+    .unwrap();
 }
 
 fn progress_bar(progress: u64, max: u64) -> String {
@@ -94,10 +111,14 @@ pub fn register() -> CreateCommand {
     .default_member_permissions(Permissions::MANAGE_MESSAGES)
     .add_option(
       CreateCommandOption::new(
-        CommandOptionType::String,
-        "umfragelink",
-        "Nachichtenlink zur Umfrage",
+        CommandOptionType::Channel,
+        "channel",
+        "Kanal mit der Umfrage",
       )
       .required(true),
+    )
+    .add_option(
+      CreateCommandOption::new(CommandOptionType::String, "messageid", "ID der Nachicht")
+        .required(true),
     )
 }
