@@ -84,7 +84,7 @@ impl EventHandler for Handler {
           "debug" => commands::debug::run(&ctx, command).await,
           "role" => commands::rolepicker::create_picker(&ctx, command).await,
           "create-poll" => commands::poll_create::create_poll(&ctx, command).await,
-          "view-poll" => commands::poll_view::view_poll(&ctx, command).await,
+          "view-poll" => commands::poll_view::view_poll(&ctx, command).await.unwrap(),
           _ => (),
         };
       }

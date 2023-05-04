@@ -1,11 +1,21 @@
-use serenity::all::{CommandInteraction, CommandOptionType, Context, Message};
+use serenity::all::{CommandInteraction, CommandOptionType, Context, MessageId};
 use serenity::builder::{
   CreateCommand, CreateCommandOption, CreateEmbed, CreateInteractionResponse,
   CreateInteractionResponseMessage,
 };
 use serenity::model::Permissions;
+use std::num::ParseIntError;
+use thiserror::Error;
 
-pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
+#[derive(Debug, Error)]
+pub enum ViewPollError {
+  #[error("parsing error: `{0}`")]
+  Parse(#[from] ParseIntError),
+  #[error("message not found")]
+  NotFound,
+}
+
+pub async fn view_poll(ctx: &Context, command: &CommandInteraction) -> Result<(), ViewPollError> {
   let react_icons = vec![
     "1️⃣".to_string(),
     "2️⃣".to_string(),
@@ -18,32 +28,30 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
   let cid = command.clone().data.options[0]
     .value
     .as_channel_id()
-    .unwrap();
-  let mid_str = {
-    let t = command.clone().data.options[1]
-      .value
-      .as_str()
-      .unwrap()
-      .to_string();
-    t
+    .expect("defined by the gateway");
+
+  let mid = command.clone().data.options[1]
+    .value
+    .as_str()
+    .expect("defined by the gateway")
+    .to_string();
+
+  let mid = mid.parse::<u64>();
+  let mid: MessageId = match mid {
+    Ok(mid) => mid.into(),
+    Err(e) => {
+      error_msg(&ctx, &command).await;
+      return Err(ViewPollError::Parse(e));
+    }
   };
 
-  let mid = mid_str.parse::<u64>();
-  let msg: Message;
-  let msg_t = ctx.cache.message(cid, mid.clone().unwrap());
-  if mid.is_ok() {
-    if msg_t.is_some() {
-      msg = msg_t.unwrap()
-    } else {
+  let msg = match ctx.http.get_message(cid, mid).await {
+    Ok(msg) => msg,
+    Err(_) => {
       error_msg(&ctx, &command).await;
-      println!("message anhand id nicht gefunden: {}", mid.unwrap());
-      return;
+      return Err(ViewPollError::NotFound);
     }
-  } else {
-    println!("mid parsing err");
-    error_msg(&ctx, &command).await;
-    return;
-  }
+  };
 
   let mut data: Vec<(String, String, u64)> = Vec::new();
   for (i, reaction) in msg.reactions.iter().enumerate() {
@@ -53,13 +61,18 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
       reaction.count,
     ))
   }
+
   let mut data_sorted: Vec<_> = data.iter().collect();
   data_sorted.sort_by(|a, b| a.2.cmp(&b.2).reverse());
 
   let max = data_sorted.first().unwrap().2;
   let mut embedfields: Vec<(String, String, bool)> = vec![];
   for item in data_sorted {
-    embedfields.push((item.1.to_owned(), progress_bar(item.2, max), false))
+    embedfields.push((
+      item.1.to_owned(),
+      progress_bar(item.2 - 1, max - 1, 20),
+      false,
+    ))
   }
 
   command
@@ -76,6 +89,7 @@ pub async fn view_poll(ctx: &Context, command: &CommandInteraction) {
     )
     .await
     .expect("API down or missing permissions?");
+  Ok(())
 }
 
 async fn error_msg(ctx: &Context, command: &CommandInteraction) {
@@ -92,17 +106,10 @@ async fn error_msg(ctx: &Context, command: &CommandInteraction) {
     .unwrap();
 }
 
-fn progress_bar(progress: u64, max: u64) -> String {
-  if progress == max {
-    return format!("####################");
-  }
-  let satz_dec = format!("{:.2}", progress / max).parse::<f64>().unwrap();
-  let barsize = (20.0 * satz_dec) as usize;
-  let bar = "#".repeat(barsize)
-    + "-"
-      .repeat((max - (20.0 * satz_dec) as u64) as usize)
-      .as_str();
-  return bar;
+fn progress_bar(progress: u64, max: u64, len: usize) -> String {
+  let ratio = progress as f64 / max as f64;
+  let filled = (len as f64 * ratio) as usize;
+  "█".repeat(filled) + &"▒".repeat(len - filled)
 }
 
 pub fn register() -> CreateCommand {
