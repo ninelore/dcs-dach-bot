@@ -73,8 +73,8 @@ impl EventHandler for Handler {
       Err(err) => println!("{err:#?}"),
     }
 
-    let stat = "Direktnachrichten für Hilfe";
-    ctx.set_activity(Some(ActivityData::listening(stat)));
+    let stat = "Ticket erstellen, um das Team zu kontaktieren";
+    ctx.set_activity(Some(ActivityData::playing(stat)));
   }
 
   async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
