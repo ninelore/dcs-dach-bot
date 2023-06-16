@@ -37,7 +37,7 @@ impl EventHandler for Handler {
           functions::update_users::members(&ctx, gid).await;
           tokio::time::sleep(Duration::from_secs(3)).await;
           functions::update_users::members_online(&ctx, gid).await;
-          tokio::time::sleep(Duration::from_secs(601)).await;
+          tokio::time::sleep(Duration::from_secs(7201)).await;
         }
       });
 
