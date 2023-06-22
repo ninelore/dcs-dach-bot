@@ -61,6 +61,16 @@ pub fn get_jets() -> Vec<RoleOption> {
     Some(vec!["Kalter Krieg"]),
   ));
   models.push(RoleOption::new(
+    "f15e-p",
+    "F-15E Strike Eagle Pilot",
+    Some(vec!["Modern"]),
+  ));
+  models.push(RoleOption::new(
+    "f15e-w",
+    "F-15E Strike Eagle WSO",
+    Some(vec!["Modern"]),
+  ));
+  models.push(RoleOption::new(
     "f16c",
     "Pilot F-16C Viper",
     Some(vec!["Modern"]),
