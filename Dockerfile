@@ -5,7 +5,7 @@ ADD . ./
 
 RUN cargo build --release
 
-FROM alpine:latest
+FROM debian:stable-slim
 WORKDIR /opt
 
 COPY --from=builder /usr/src/dcs-dach-bot/target/release/dcs-dach-bot /opt/dcs-dach-bot

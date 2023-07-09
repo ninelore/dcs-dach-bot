@@ -262,7 +262,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
   let mut err = String::new();
   if lenerr {
     err = format!(
-      "Du kannst maximal 10 Modulrollen auswählen <@{}>.",
+      "<@{}> Du kannst maximal 10 Modulrollen auswählen.",
       user.user.id
     );
   }

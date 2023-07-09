@@ -11,7 +11,6 @@ Cargo.lock
 /target/
 **/*.rs.bk
 *.pdb
-fly.toml
 
 # Coverage
 /coverage

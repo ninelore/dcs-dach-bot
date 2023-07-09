@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for dcs-dach-bot on 2023-07-09T17:15:53+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "dcs-dach-bot"
+primary_region = "fra"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
+
+[experimental]
+  auto_rollback = true
+
+[deploy]
+  strategy = "rolling"
+
+[env]
+  CHANNELID_ALL = "951858030243373117"
+  CHANNELID_MOD = "1076595614353215499"
+  CHANNELID_ONLINE = "846769112684036106"
+  GUILD_ID = "691838795049599027"
+
+[[services]]
+## comment everything below in case of deployment failure. Checks arent relieable and sometimes kill a healthy deployment
+#  protocol = "tcp"
+#  internal_port = 22
+#  ports = []
+#  [services.concurrency]
+#    type = "connections"
+#    hard_limit = 25
+#    soft_limit = 20
