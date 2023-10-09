@@ -73,7 +73,7 @@ impl EventHandler for Handler {
       Err(err) => println!("{err:#?}"),
     }
 
-    let stat = "Ticket erstellen, um das Team zu kontaktieren";
+    let stat = "Erstelle ein Ticket, um das Team zu kontaktieren";
     ctx.set_activity(Some(ActivityData::playing(stat)));
   }
 
