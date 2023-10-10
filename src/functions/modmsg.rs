@@ -92,7 +92,7 @@ pub async fn interaction(ctx: &Context, component: &ComponentInteraction) {
     )
     .await
     .expect("Err: old msg not found");
-  let bearbeiter = component.clone().member.unwrap().user.id.0;
+  let bearbeiter = component.clone().member.unwrap().user.id.get();
 
   let fields = vec![
     ("Benutzername", format!("<@{}>", oldmsg.author.id), true),

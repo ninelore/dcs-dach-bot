@@ -44,7 +44,7 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
   if everyone {
     content = "@everyone".to_string()
   } else if ping.to_role_cached(ctx).is_some() {
-    content = format!("<@&{}>", ping.0)
+    content = format!("<@&{}>", ping.get())
   }
 
   command
@@ -69,7 +69,7 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
       .unwrap();
     let poll = msgs
       .iter()
-      .find(|p| p.author.id.0 == command.application_id.0)
+      .find(|p| p.author.id.get() == command.application_id.get())
       .expect("Couldnt find the message that i just sent...")
       .clone();
     poll
