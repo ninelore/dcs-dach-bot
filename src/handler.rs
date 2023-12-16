@@ -61,7 +61,6 @@ impl EventHandler for Handler {
         &ctx,
         vec![
           commands::debug::register(),
-          commands::rolepicker::register(),
           commands::poll_create::register(),
           commands::poll_view::register(),
         ],
@@ -82,7 +81,6 @@ impl EventHandler for Handler {
       Interaction::Command(command) => {
         match command.data.name.as_str() {
           "debug" => commands::debug::run(&ctx, command).await,
-          "role" => commands::rolepicker::create_picker(&ctx, command).await,
           "create-poll" => commands::poll_create::create_poll(&ctx, command).await,
           "view-poll" => commands::poll_view::view_poll(&ctx, command).await.unwrap(),
           _ => (),
@@ -90,7 +88,6 @@ impl EventHandler for Handler {
       }
 
       Interaction::Component(component) => match component.data.custom_id.as_str() {
-        "rolepicker" => commands::rolepicker::interaction(&ctx, component).await,
         "assign" | "unassign" | "close" => functions::modmsg::interaction(&ctx, component).await,
         _ => (),
       },

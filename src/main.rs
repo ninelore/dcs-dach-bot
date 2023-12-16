@@ -3,11 +3,10 @@ mod functions;
 mod handler;
 mod util;
 
-use std::env;
-
 use serenity::all::GuildId;
 use serenity::prelude::GatewayIntents;
 use serenity::Client;
+use std::env;
 
 #[tokio::main]
 async fn main() {
