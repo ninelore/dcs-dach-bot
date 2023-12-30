@@ -10,6 +10,6 @@ publish = false
 dotenv = "0.15.0"
 thiserror = "1.0.40"
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
-serenity = { git = "https://github.com/serenity-rs/serenity", branch = "next", default-features = false, features = [
+serenity = { version = "0.12.0", default-features = false, features = [
     "builder", "client", "cache", "collector", "gateway", "rustls_backend", "model", "utils"
 ] }

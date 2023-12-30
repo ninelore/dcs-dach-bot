@@ -77,7 +77,7 @@ pub async fn create_poll(ctx: &Context, command: &CommandInteraction) {
 
   for i in answers.clone() {
     let num = i.0.split('-').last().unwrap().parse::<usize>().unwrap();
-    let reaction_type = Unicode(react_icons[num - 1].clone());
+    let reaction_type = Unicode(String::from(react_icons[num - 1].clone()));
     let poll = poll.react(&ctx, reaction_type).await;
     poll.expect("Err couldnt react");
   }
