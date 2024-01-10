@@ -1,11 +1,16 @@
-FROM rust:latest AS builder
+FROM rust:alpine AS builder
 
 WORKDIR /usr/src/dcs-dach-bot
 ADD . ./
 
+RUN apk update && \
+    apk upgrade
+
+RUN apk add --no-cache musl-dev
+
 RUN cargo build --release
 
-FROM debian:stable-slim
+FROM alpine:latest
 WORKDIR /opt
 
 COPY --from=builder /usr/src/dcs-dach-bot/target/release/dcs-dach-bot /opt/dcs-dach-bot
