@@ -46,7 +46,7 @@ impl EventHandler for Handler {
   }
 
   async fn message(&self, ctx: Context, msg: Message) {
-    if msg.is_private() && !msg.is_own(&ctx) {
+    if msg.guild_id.is_none() && msg.author != **ctx.cache.current_user() {
       functions::modmsg::alert_moderators(&ctx, msg).await;
     }
   }
@@ -57,14 +57,7 @@ impl EventHandler for Handler {
     let gid = self.guild_id;
     // GUILD COMMANDS
     let commands = gid
-      .set_commands(
-        &ctx,
-        vec![
-          commands::debug::register(),
-          commands::poll_create::register(),
-          commands::poll_view::register(),
-        ],
-      )
+      .set_commands(&ctx, vec![commands::debug::register()])
       .await;
 
     match commands {
@@ -81,8 +74,6 @@ impl EventHandler for Handler {
       Interaction::Command(command) => {
         match command.data.name.as_str() {
           "debug" => commands::debug::run(&ctx, command).await,
-          "create-poll" => commands::poll_create::create_poll(&ctx, command).await,
-          "view-poll" => commands::poll_view::view_poll(&ctx, command).await.unwrap(),
           _ => (),
         };
       }
