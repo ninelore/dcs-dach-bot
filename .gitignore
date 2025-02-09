@@ -18,3 +18,6 @@ build_rs_cov.profraw
 
 # Direnv
 .direnv
+
+# env, secrets :3
+*.env

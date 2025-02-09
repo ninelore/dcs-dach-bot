@@ -19,6 +19,7 @@ async fn main() {
   let intents = GatewayIntents::DIRECT_MESSAGES
     | GatewayIntents::GUILDS
     | GatewayIntents::GUILD_MESSAGES
+    | GatewayIntents::GUILD_VOICE_STATES
     // Privileged
     | GatewayIntents::GUILD_MEMBERS
     | GatewayIntents::GUILD_PRESENCES;

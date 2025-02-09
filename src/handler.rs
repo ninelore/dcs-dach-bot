@@ -5,6 +5,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
+use serenity::all::VoiceState;
 use serenity::all::{GuildId, Interaction, Message, Ready};
 use serenity::async_trait;
 use serenity::gateway::ActivityData;
@@ -84,5 +85,9 @@ impl EventHandler for Handler {
       },
       _ => println!("INFO: Unhandled Interaction caught"),
     }
+  }
+
+  async fn voice_state_update(&self, ctx: Context, old: Option<VoiceState>, new: VoiceState) {
+    functions::audit::log_voice_audit(&ctx, old, new).await;
   }
 }
