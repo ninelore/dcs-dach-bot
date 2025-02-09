@@ -34,8 +34,11 @@ pub async fn log_voice_audit(ctx: &Context, old: Option<VoiceState>, new: VoiceS
   let usr = new.user_id.to_user(&ctx).await.expect("Audit: User fehlt");
 
   let msg = MessageBuilder::new()
-    .push("Voiceaktivität: ")
-    .push(format!("{} ({}) -> ", usr.tag(), new.user_id.get()))
+    .push(format!(
+      "{} ({}) hat Sprachchat betreten ",
+      usr.tag(),
+      new.user_id.get()
+    ))
     .channel(new.channel_id.unwrap())
     .build();
 
