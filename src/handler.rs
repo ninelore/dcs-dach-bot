@@ -70,6 +70,7 @@ impl EventHandler for Handler {
     ctx.set_activity(Some(ActivityData::playing(stat)));
   }
 
+  #[allow(clippy::single_match)]
   async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
     match &interaction {
       Interaction::Command(command) => {
