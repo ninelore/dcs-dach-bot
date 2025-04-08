@@ -1,7 +1,6 @@
 mod commands;
 mod functions;
 mod handler;
-mod util;
 
 use serenity::all::GuildId;
 use serenity::prelude::GatewayIntents;
