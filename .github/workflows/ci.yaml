@@ -25,6 +25,6 @@ jobs:
       - name: Get codecov
         run: nix build .#tarpaulin
       - name: Upload Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: ./result/cobertura.xml
