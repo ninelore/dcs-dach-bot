@@ -18,8 +18,8 @@ pub async fn alert_moderators(ctx: &Context, msg: Message) {
     .into_iter()
     .find(|p| p.author.id == ctx.cache.current_user().id && p.content.starts_with("Danke"));
   let mut lastrequest = 0;
-  if bmsg.is_some() {
-    lastrequest = bmsg.unwrap().timestamp.unix_timestamp();
+  if let Some(bmsg) = bmsg {
+    lastrequest = bmsg.timestamp.unix_timestamp();
   }
 
   if SystemTime::now()

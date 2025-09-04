@@ -20,3 +20,6 @@ build_rs_cov.profraw
 
 # env, secrets :3
 *.env
+
+# Nix
+result
