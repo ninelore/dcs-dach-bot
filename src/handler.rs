@@ -11,6 +11,8 @@ use serenity::async_trait;
 use serenity::gateway::ActivityData;
 use serenity::prelude::{Context, EventHandler};
 
+const ENABLE_MODMSG: bool = false;
+
 pub struct Handler {
   guild_id: GuildId,
   is_running: AtomicBool,
@@ -47,7 +49,7 @@ impl EventHandler for Handler {
   }
 
   async fn message(&self, ctx: Context, msg: Message) {
-    if msg.guild_id.is_none() && msg.author != **ctx.cache.current_user() {
+    if ENABLE_MODMSG && msg.guild_id.is_none() && msg.author != **ctx.cache.current_user() {
       functions::modmsg::alert_moderators(&ctx, msg).await;
     }
   }
@@ -67,7 +69,9 @@ impl EventHandler for Handler {
     }
 
     let stat = "Erstelle ein Ticket, um das Team zu kontaktieren";
-    ctx.set_activity(Some(ActivityData::playing(stat)));
+    if ENABLE_MODMSG {
+      ctx.set_activity(Some(ActivityData::playing(stat)));
+    }
   }
 
   #[allow(clippy::single_match)]
